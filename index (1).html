@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Video Zone</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+:root{--bg:#07080f;--c:#10131e;--c2:#171b2a;--t:#f3f4fa;--m:#8a91ad;--o:#ff6a1f;--y:#ffbf2f;--ok:#22c55e;--er:#ef4444;--ln:#262b40;--g:linear-gradient(135deg,#ff6a1f,#ffbf2f)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+img{-webkit-user-drag:none;pointer-events:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+body{background:var(--bg);color:var(--t);font:15px/1.5 system-ui,sans-serif;min-height:100vh;padding:14px 14px 110px;overflow-x:hidden}
+.orb{position:fixed;width:340px;height:340px;border-radius:50%;filter:blur(90px);opacity:.28;z-index:-1;animation:fl 12s ease-in-out infinite}
+.o1{background:#ff6a1f;top:-120px;left:-100px}.o2{background:#8b3dff;bottom:-140px;right:-120px;animation-delay:-6s}
+@keyframes fl{50%{transform:translate(40px,50px) scale(1.15)}}
+.w{max-width:480px;margin:auto}
+.pg{animation:in .45s both}
+@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero{position:relative;text-align:center;padding:26px 16px 22px;border-radius:26px;border:1px solid #3a2418;background:linear-gradient(160deg,#22140f,#10131e 70%);margin-bottom:14px;overflow:hidden}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,rgba(255,191,47,.12) 50%,transparent 60%);transform:translateX(-100%);animation:sh 4s infinite}
+@keyframes sh{to{transform:translateX(100%)}}
+.hero h1{font-size:25px;line-height:1.25;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:10px}
+.hero p{font-size:11px;letter-spacing:3px;color:var(--m);margin-top:6px}
+.lg{display:inline-block;animation:bo 3s ease-in-out infinite}
+@keyframes bo{50%{transform:translateY(-5px)}}
+.pill{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px;padding:5px 12px 5px 8px;border-radius:30px;background:#0b0d16;border:1px solid var(--ln);z-index:1}
+.pill svg{width:18px;height:18px;stroke:var(--y)}
+.inv{display:flex;align-items:center;gap:10px;padding:16px;border-radius:22px;background:var(--g);color:#1a0d02;margin-bottom:14px;animation:in .5s .1s both}
+.inv div{flex:1}.inv b{display:block;font-size:16px}.inv span{font-size:12px;opacity:.85}
+.inv button{border:0;background:#0b0d16;color:#fff;padding:11px 18px;border-radius:15px;font:600 14px system-ui;transition:.2s}
+.inv button:active{transform:scale(.93)}
+.card{background:var(--c);border:1px solid var(--ln);border-radius:24px;overflow:hidden;margin-bottom:14px;animation:in .5s .2s both}
+.pd{padding:16px}
+.nt{display:flex;gap:10px;padding:13px 14px;border-radius:18px;background:#1a1530;border:1px solid #382d66;margin-bottom:14px;font-size:14px;animation:in .5s .15s both}
+.nt svg{flex:none;width:22px;height:22px;stroke:#a995ff}
+.th{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#2a1810,#1d1740);display:grid;place-items:center}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.th .ov{position:absolute;inset:0;background:rgba(5,6,12,.5);display:grid;place-items:center}
+.th.u .ov{background:rgba(5,6,12,.15)}
+.ic{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);display:grid;place-items:center;animation:pu 2s infinite}
+.ic svg{width:28px;height:28px;stroke:#fff}
+@keyframes pu{0%{box-shadow:0 0 0 0 rgba(255,106,31,.6)}100%{box-shadow:0 0 0 24px rgba(255,106,31,0)}}
+.bd{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:rgba(10,8,8,.75);font-size:13px}
+.bd svg{width:16px;height:16px;stroke:#fff}
+.ct{font-size:19px;font-weight:700}
+.sub{display:flex;align-items:center;gap:6px;color:var(--m);font-size:13px;margin-top:4px}.sub svg{width:16px;height:16px;stroke:var(--m)}
+.bar{height:7px;background:var(--c2);border-radius:9px;overflow:hidden;margin:14px 0 4px}
+.bar i{display:block;height:100%;background:var(--g);border-radius:9px;transition:width .8s cubic-bezier(.2,.9,.3,1)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:15px;background:var(--c2);margin-top:8px;border:1px solid transparent;transition:.3s}
+.row.cur{border-color:var(--o);box-shadow:0 0 18px rgba(255,106,31,.2)}
+.row .n{width:30px;height:30px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:13px;color:var(--m)}
+.row.dn .n{background:var(--ok);color:#fff;animation:pop .5s}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.25)}}
+.row .l{flex:1}.row.dn .l{color:var(--m)}
+.rw{position:relative;width:38px;height:38px;display:grid;place-items:center;font-size:12px;font-weight:700}
+.rw svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.rb,.rf{fill:none;stroke-width:3.5}.rb{stroke:var(--c)}.rf{stroke:var(--o);stroke-dasharray:107;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.btn{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:15px;border:0;border-radius:17px;font:700 16px system-ui;color:#1a0d02;background:var(--g);box-shadow:0 8px 24px rgba(255,106,31,.3);transition:.2s;margin-top:14px}
+.btn svg{width:20px;height:20px;stroke:#1a0d02}
+.btn:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);transform:translateX(-100%);animation:sh 2.6s infinite}
+.btn:active{transform:scale(.97)}.btn[disabled]{opacity:.55;box-shadow:none}.btn[disabled]:before{display:none}
+.btn.s{width:auto;display:inline-flex;margin:0;padding:8px 14px;font-size:13px;border-radius:11px;box-shadow:none}
+.btn.g{background:#2a1810;color:var(--o);border:1px solid #4a2a18;box-shadow:none}.btn.g svg{stroke:var(--o)}.btn.g:before{display:none}
+.btn.r{background:var(--er);color:#fff}.btn.r:before{display:none}
+.m{color:var(--m);font-size:13px}.ok{color:var(--ok)}
+.pf{text-align:center}.av{width:92px;height:92px;border-radius:50%;margin:4px auto 10px;display:grid;place-items:center;font-size:36px;font-weight:700;color:#1a0d02;background:var(--g);box-shadow:0 0 0 4px var(--c),0 0 0 7px var(--o)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.st{background:var(--c2);border:1px solid var(--ln);border-radius:16px;padding:12px;text-align:center}.st b{display:block;font-size:22px;color:var(--o)}.st span{font-size:12px;color:var(--m)}
+input,textarea,select{width:100%;padding:11px 13px;border-radius:13px;border:1px solid var(--ln);background:var(--c2);color:var(--t);font:inherit;margin:4px 0 10px}
+textarea{min-height:84px}label{font-size:13px;color:var(--m)}
+.ck{display:flex;align-items:center;gap:10px;margin:8px 0}.ck input{width:20px;height:20px;margin:0;accent-color:var(--o)}
+.vi{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--ln);font-size:13px}
+.vi span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav{position:fixed;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:452px;margin:auto;display:flex;justify-content:space-around;padding:8px;border-radius:26px;background:rgba(18,21,34,.92);backdrop-filter:blur(14px);border:1px solid var(--ln);z-index:5}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border:0;background:none;color:var(--m);font:600 12px system-ui;border-radius:18px;transition:.3s}
+.nav svg{width:24px;height:24px;stroke:currentColor;transition:.3s}
+.nav .on{color:var(--o);background:rgba(255,106,31,.1)}.nav .on svg{transform:translateY(-2px) scale(1.1)}
+#toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%) translateY(20px);background:#000d;border:1px solid var(--ln);padding:10px 18px;border-radius:14px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;max-width:90%;z-index:9}
+#toast.on{opacity:1;transform:translateX(-50%)}
+</style></head><body>
+<div class="orb o1"></div><div class="orb o2"></div>
+<div class="w"><div id="v1" class="pg"></div><div id="v3" class="pg" hidden></div><div id="v2" class="pg" hidden></div></div>
+<div class="nav" id="nav"></div><div id="toast"></div>
+<script>
+const tg=Telegram.WebApp;tg.ready();tg.expand();try{tg.setHeaderColor('#07080f');tg.setBackgroundColor('#07080f')}catch(e){}
+let S=null,A=null,busy=0,page='1';
+const $=s=>document.querySelector(s);
+const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const I={home:ic('<path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/>'),user:ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>'),shield:ic('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'),lock:ic('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>'),play:ic('<path d="M7 4v16l13-8z"/>'),clock:ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),eye:ic('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),share:ic('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/>'),copy:ic('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>'),users:ic('<circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0114 0M16 4.5a3.5 3.5 0 010 7M22 20a7 7 0 00-4-6.3"/>'),bell:ic('<path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 21a2 2 0 01-3.4 0"/>')};
+const logo='<svg class="lg" width="46" height="46" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff6a1f"/><stop offset="1" stop-color="#ffbf2f"/></linearGradient></defs><rect width="40" height="40" rx="12" fill="url(#g)"/><path d="M15.5 11.5v17l13-8.5z" fill="#1a0d02"/><rect x="8" y="31.5" width="24" height="2.5" rx="1.2" fill="#1a0d02" opacity=".5"/></svg>';
+const toast=m=>{const t=$('#toast');t.textContent=m;t.className='on';setTimeout(()=>t.className='',2600)};
+async function api(p,b,raw){const r=await fetch('/api/'+p,{method:'POST',headers:raw?{'X-Init':tg.initData}:{'Content-Type':'application/json','X-Init':tg.initData},body:raw?b:JSON.stringify(b||{})});return r.json()}
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>{s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return(d?d+'দিন ':'')+(h?h+'ঘ ':'')+String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const link=()=>`https://t.me/${S.bot}?start=r${S.uid}`;
+function nav(){const b=[['1','হোম','home'],['3','প্রোফাইল','user']];if(S&&S.admin)b.push(['2','অ্যাডমিন','shield']);
+$('#nav').innerHTML=b.map(x=>`<button class="${page==x[0]?'on':''}" onclick="go('${x[0]}')">${I[x[2]]}${x[1]}</button>`).join('')}
+function go(p){page=p;['1','2','3'].forEach(i=>{const e=$('#v'+i);e.hidden=i!=p;if(i==p){e.classList.remove('pg');void e.offsetWidth;e.classList.add('pg')}});if(p=='2')admin();nav()}
+async function load(){const r=await api('state');if(r.e)return;S=r;draw();if(S.pend&&S.rem<=0)claim()}
+function draw(){nav();
+const un=S.unl!==0,all=S.done>=S.need,pct=S.need?S.done/S.need*100:100;
+let h=`<div class="hero"><div class="pill">${I.users}<b>${S.refs}</b></div>${logo}<h1>${esc(S.title)}</h1><p>প্রিমিয়াম ভিডিও জোন</p></div>`;
+h+=`<div class="inv"><div><b>বন্ধুদের ইনভাইট করুন</b><span>লিংক শেয়ার করে বন্ধুদের জানান</span></div><button onclick="share()">Invite</button></div>`;
+if(S.notice)h+=`<div class="nt">${I.bell}<div>${esc(S.notice)}</div></div>`;
+h+=`<div class="card"><div class="th ${un?'u':''}">${S.thumb?`<img src="${S.thumb}">`:''}<div class="ov"><div class="ic">${un||all?I.play:I.lock}</div></div><div class="bd">${I.eye}${S.nv} ভিডিও</div></div><div class="pd"><div class="ct">${esc(S.title)}</div>`;
+if(un){h+=`<div class="sub">${I.clock}${S.unl>0?`সময় বাকি: <b id="ex">${fmt(S.unl)}</b>`:'ভিডিও আনলক করা আছে'}</div><p class="ok" style="margin-top:10px;font-weight:600">ভিডিও বটের চ্যাটে পাঠানো হয়েছে।</p><button class="btn" onclick="tg.close()">${I.play}চ্যাটে যান</button>`}
+else{h+=`<div class="sub">${I.clock}${S.block?'পুরো অ্যাড দেখুন, মাঝপথে বন্ধ করলে গণনা হবে না':S.wait+' সেকেন্ড অপেক্ষা করে অ্যাডে ক্লিক করুন'}</div><div class="bar"><i style="width:${pct}%"></i></div>`;
+for(let i=0;i<S.need;i++){const d=i<S.done,c=i==S.done;
+h+=`<div class="row ${d?'dn':''} ${c?'cur':''}"><div class="n">${d?'&#10003;':i+1}</div><span class="l">অ্যাড ${i+1}</span>${c&&S.pend?`<div class="rw"><svg viewBox="0 0 40 40"><circle class="rb" cx="20" cy="20" r="17"/><circle id="rc" class="rf" cx="20" cy="20" r="17" style="stroke-dashoffset:${107*(1-S.rem/S.wait)}"/></svg><span id="cd">${Math.ceil(S.rem)}</span></div>`:`<span class="m">${d?'সম্পন্ন':c?'পরবর্তী':'লক'}</span>`}</div>`}
+h+=all?`<button class="btn" ${S.nv?'':'disabled'} onclick="watch()">${I.play}ভিডিও দেখুন</button>`:`<button class="btn" id="bt" ${S.pend||busy?'disabled':''} onclick="click1()">${I.lock}${S.pend?'অপেক্ষা করুন '+Math.ceil(S.rem)+'s':busy?'অ্যাড লোড হচ্ছে...':`আনলক (${S.done}/${S.need})`}</button>`}
+h+='</div></div>';$('#v1').innerHTML=h;
+const n=(tg.initDataUnsafe.user||{}).first_name||'U';
+$('#v3').innerHTML=`<div class="card"><div class="pd pf"><div class="av">${esc(n[0])}</div><div class="ct">${esc(n)}</div><p class="m">ID: ${S.uid}</p>
+<div class="g2"><div class="st"><b>${S.refs}</b><span>মোট রেফার</span></div><div class="st"><b>${S.done}/${S.need}</b><span>অ্যাড সম্পন্ন</span></div></div>
+<input id="rl" readonly value="${link()}"><button class="btn" onclick="navigator.clipboard.writeText(link());toast('লিংক কপি হয়েছে')">${I.copy}লিংক কপি</button><button class="btn g" onclick="share()">${I.share}শেয়ার করুন</button></div></div>`}
+function share(){tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(link())+'&text='+encodeURIComponent('এই বটে ভিডিও আনলক করুন'))}
+async function click1(){if(busy)return;busy=1;draw();const r=await api('click');if(r.e){busy=0;draw();return toast(r.e)}
+if(r.block){try{const x=await window.Adsgram.init({blockId:String(r.block)}).show();const c=await api('claim',{done:x&&x.done?1:0});busy=0;if(c.e)toast(c.e);if(c.title)S=c;draw()}catch(x){busy=0;draw();toast('অ্যাড দেখানো যায়নি, আবার চেষ্টা করুন')}return}
+busy=0;S.pend=1;S.rem=S.wait;draw();tg.openLink(r.url)}
+async function claim(){const r=await api('claim');if(r.e)toast(r.e);if(r.title){S=r;draw()}}
+async function watch(){const r=await api('watch');if(r.e)return toast(r.e);toast('ভিডিও পাঠানো হয়েছে');setTimeout(()=>tg.close(),700)}
+const left=()=>{if(S&&S.pend)fetch('/api/left',{method:'POST',keepalive:true,headers:{'X-Init':tg.initData}})};
+document.addEventListener('visibilitychange',()=>document.hidden?left():load());
+window.addEventListener('pagehide',left);window.addEventListener('blur',left);
+tg.onEvent('deactivated',left);tg.onEvent('activated',load);
+setInterval(()=>{if(!S)return;
+if(S.pend&&S.rem>0){S.rem-=1;const n=Math.max(0,Math.ceil(S.rem)),c=$('#cd'),r=$('#rc'),b=$('#bt');if(c)c.textContent=n;if(r)r.style.strokeDashoffset=107*(1-S.rem/S.wait);if(b)b.lastChild.textContent='অপেক্ষা করুন '+n+'s';if(S.rem<=0)claim()}
+if(S.unl>0){S.unl-=1;const e=$('#ex');if(e)e.textContent=fmt(S.unl);if(S.unl<=0)load()}},1000);
+async function admin(){A=await api('admin/data');const s=A.s,st=A.st;
+const ex=s.expire,u=ex&&ex%1440==0?1440:ex&&ex%60==0?60:1;
+$('#v2').innerHTML=`<div class="card"><div class="pd"><div class="ct">অ্যাডমিন প্যানেল</div><div class="g2">
+<div class="st"><b>${st.users}</b><span>মোট ইউজার</span></div><div class="st"><b>${st.today}</b><span>আজকের নতুন</span></div>
+<div class="st"><b>${st.tot}</b><span>মোট আনলক</span></div><div class="st"><b>${st.unlocked}</b><span>এখন আনলক</span></div>
+<div class="st"><b>${st.ads}</b><span>অ্যাড কাউন্ট</span></div><div class="st"><b>${st.refs}</b><span>রেফার</span></div></div></div></div>
+<div class="card"><div class="pd"><label>শিরোনাম</label><input id="a_t" value="${esc(s.title)}">
+<label>নোটিশ (ইউজার অ্যাপে দেখাবে)</label><textarea id="a_n">${esc(s.notice)}</textarea>
+<label>ভিডিওর পর শেষ মেসেজ</label><textarea id="a_f">${esc(s.final)}</textarea>
+<label>Adsgram Block ID (খালি রাখলে নিচের লিংক পদ্ধতি চলবে)</label><input id="a_k" value="${esc(s.block)}">
+<label>অ্যাড লিংক (প্রতি লাইনে একটি)</label><textarea id="a_a" style="min-height:120px">${esc(s.ads.join('\n'))}</textarea>
+<div class="g2" style="margin:0"><div><label>কয়টি অ্যাড</label><input id="a_c" type="number" min="1" value="${s.need}"></div><div><label>অপেক্ষা (সেকেন্ড)</label><input id="a_w" type="number" min="1" value="${s.wait}"></div></div>
+<label>ভিডিও থাকার সময় (0 = সবসময়)</label><div class="g2" style="margin:0"><input id="a_e" type="number" min="0" value="${ex?ex/u:0}"><select id="a_u"><option value="1" ${u==1?'selected':''}>মিনিট</option><option value="60" ${u==60?'selected':''}>ঘণ্টা</option><option value="1440" ${u==1440?'selected':''}>দিন</option></select></div>
+<div class="ck"><input id="a_p" type="checkbox" ${s.protect?'checked':''}><label>ডাউনলোড/ফরওয়ার্ড/রেকর্ড সুরক্ষা চালু</label></div>
+<div class="ck"><input id="a_s" type="checkbox" ${s.strict?'checked':''}><label>অ্যাডে ক্লিক যাচাই (পেজ ছাড়া বাধ্যতামূলক)</label></div>
+<label>থাম্বনেইল</label><input id="a_th" type="file" accept="image/*"><button class="btn" onclick="asave()">সেভ করুন</button></div></div>
+<div class="card"><div class="pd"><div class="ct">ভিডিও</div><input id="a_v" type="file" accept="video/*" style="margin-top:10px"><button class="btn g" style="margin-top:0" onclick="upv()">ভিডিও আপলোড</button>
+${A.v.map(v=>`<div class="vi"><span>${esc(v.n)}</span><button class="btn s r" onclick="dv(${v.id})">মুছুন</button></div>`).join('')||'<p class="m" style="margin-top:10px">কোনো ভিডিও নেই</p>'}</div></div>
+<div class="card"><div class="pd"><div class="ct">ইউজারদের নোটিশ পাঠান</div><textarea id="a_b" style="margin-top:10px"></textarea><button class="btn" style="margin-top:0" onclick="bc()">সবাইকে পাঠান</button></div></div>`}
+function rs(f){return new Promise(ok=>{const i=new Image;i.onload=()=>{const c=document.createElement('canvas');const w=Math.min(640,i.width);c.width=w;c.height=i.height*w/i.width;c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.75))};i.src=URL.createObjectURL(f)})}
+async function asave(){const b={title:$('#a_t').value,notice:$('#a_n').value,final:$('#a_f').value,ads:$('#a_a').value.split('\n'),need:$('#a_c').value||1,wait:$('#a_w').value||15,expire:(+$('#a_e').value||0)*$('#a_u').value,protect:$('#a_p').checked,strict:$('#a_s').checked,block:$('#a_k').value.trim()};
+const f=$('#a_th').files[0];if(f)b.thumb=await rs(f);const r=await api('admin/save',b);toast(r.ok?'সেভ হয়েছে':'ত্রুটি');load()}
+async function upv(){const f=$('#a_v').files[0];if(!f)return toast('ভিডিও বাছাই করুন');toast('আপলোড হচ্ছে...');const d=new FormData;d.append('f',f);const r=await api('admin/video',d,1);toast(r.ok?'আপলোড সম্পন্ন':(r.e||'ত্রুটি'));admin();load()}
+async function dv(id){await api('admin/vdel',{id});admin();load()}
+async function bc(){const r=await api('admin/broadcast',{text:$('#a_b').value});toast(r.ok?'পাঠানো শুরু হয়েছে':'লিখুন');if(r.ok)$('#a_b').value=''}
+['contextmenu','dragstart','copy','cut'].forEach(e=>document.addEventListener(e,x=>{if(!/INPUT|TEXTAREA/.test(x.target.tagName))x.preventDefault()}));
+load();
+</script></body></html>
