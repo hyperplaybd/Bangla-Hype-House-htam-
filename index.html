@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#07080f;--c:#10131e;--c2:#171b2a;--t:#f3f4fa;--m:#8a91ad;--o:#ff6a1f;--y:#ffbf2f;--ok:#22c55e;--ln:#262b40;--g:linear-gradient(135deg,#ff6a1f,#ffbf2f)}
+:root{--bg:#07080f;--c:#10131e;--c2:#171b2a;--t:#f3f4fa;--m:#8a91ad;--o:#ff6a1f;--y:#ffbf2f;--ok:#22c55e;--er:#ff7b7b;--ln:#262b40;--g:linear-gradient(135deg,#ff6a1f,#ffbf2f)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg)}
 body{color:var(--t);font:15px/1.5 "Hind Siliguri",system-ui,sans-serif;min-height:100vh;padding:14px 14px 130px;-webkit-user-select:none;user-select:none;overflow-x:hidden}
@@ -23,10 +23,11 @@ svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:
 .view{animation:in .4s both}
 .card{background:var(--c);border:1px solid var(--ln);border-radius:24px;padding:18px;margin-bottom:14px}
 .hero{position:relative;text-align:center;padding:26px 16px;background:linear-gradient(160deg,#22140f,#10131e 70%);border-color:#3a2418;overflow:hidden}
-.hero h1{font:700 26px/1.2 Cinzel,serif;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 40px}
+.hero h1{font:700 26px/1.2 Cinzel,serif;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 44px}
 .hero p{font-size:11px;letter-spacing:3px;color:#c9a893;margin-top:8px;text-transform:uppercase}
 .pill{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:30px;background:#0b0d16;border:1px solid #3a2418;font-weight:700}
-.avatar{width:38px;height:38px;border-radius:50%;background:var(--g);color:#1a0d02;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--g);color:#1a0d02;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
 .pill svg{width:16px;height:16px;stroke:var(--y)}
 .invite{display:flex;align-items:center;gap:12px;padding:18px;border-radius:24px;background:var(--g);color:#1a0d02;margin-bottom:14px}
 .invite div{flex:1}
@@ -71,8 +72,6 @@ svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:
 .primary{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:18px;background:var(--g);color:#1a0d02;font-weight:700;font-size:16px;box-shadow:0 8px 24px rgba(255,106,31,.3)}
 .primary svg{stroke:#1a0d02}
 .primary:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);transform:translateX(-100%);animation:sh 2.6s infinite}
-.primary[disabled]{opacity:.5;box-shadow:none}
-.primary[disabled]:before{display:none}
 .side{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--o);min-width:66px}
 .sqbtn{width:66px;height:66px;border-radius:18px;background:var(--c2);border:1px solid var(--ln);display:grid;place-items:center;color:var(--o)}
 .sqbtn[disabled]{opacity:.4}
@@ -80,15 +79,16 @@ svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:
 .big svg{stroke:#1a0d02}
 .big.ghost{background:#2a1810;color:var(--o);border:1px solid #4a2a18;box-shadow:none}
 .big.ghost svg{stroke:var(--o)}
-.big.danger{background:#3a1212;color:#ff7b7b;border:1px solid #5a1f1f;box-shadow:none}
-.big.danger svg{stroke:#ff7b7b}
+.big.danger{background:#3a1212;color:var(--er);border:1px solid #5a1f1f;box-shadow:none}
+.big.danger svg{stroke:var(--er)}
 .big[disabled]{opacity:.5}
 .ok{color:var(--ok);font-weight:600;margin-top:12px}
 .muted{color:var(--m);font-size:13px;margin-top:6px}
 .sec{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;margin:4px 2px 14px}
 .sec svg{stroke:var(--o);width:24px;height:24px}
 .center{text-align:center}
-.bigavatar{width:104px;height:104px;border-radius:50%;margin:8px auto 14px;display:grid;place-items:center;font-size:42px;font-weight:700;color:#1a0d02;background:var(--g);box-shadow:0 0 0 4px var(--c),0 0 0 7px var(--o)}
+.bigavatar{width:104px;height:104px;border-radius:50%;margin:8px auto 14px;display:grid;place-items:center;font-size:42px;font-weight:700;color:#1a0d02;background:var(--g);box-shadow:0 0 0 4px var(--c),0 0 0 7px var(--o);overflow:hidden}
+.bigavatar img{width:100%;height:100%;object-fit:cover}
 .pname{font-size:24px;font-weight:700}
 .pid{color:var(--m);font-size:15px;margin-top:4px;word-break:break-all}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
@@ -99,7 +99,7 @@ svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:
 .linkbox svg{stroke:var(--o)}
 .empty{text-align:center;padding:40px 16px;color:var(--m)}
 .empty svg{width:44px;height:44px;stroke:var(--o);margin:0 auto 10px;display:block}
-.field{display:block;font-size:13px;color:var(--m);margin:14px 0 6px}
+.field{display:block;font-size:13px;color:var(--m);margin:12px 0 6px}
 .input{width:100%;background:var(--c2);border:1px solid var(--ln);border-radius:14px;padding:11px 13px;outline:0}
 textarea.input{min-height:72px;resize:vertical}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -110,11 +110,15 @@ textarea.input{min-height:72px;resize:vertical}
 .sw span:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.25s}
 .sw input:checked+span{background:var(--g)}
 .sw input:checked+span:before{transform:translateX(22px)}
-.pick{display:flex;align-items:center;gap:12px;padding:12px;background:var(--c2);border:1px dashed #4a2a18;border-radius:16px;margin-top:6px;cursor:pointer}
-.pick .pv{width:96px;height:54px;border-radius:10px;background:#1d1740;overflow:hidden;display:grid;place-items:center;flex:none}
-.pick .pv img{width:100%;height:100%;object-fit:cover}
-.pick input{display:none}
-.vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:var(--c2);margin-top:8px;font-size:14px}
+.acard{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:20px;background:var(--c2);border:1px solid var(--ln);margin-bottom:12px}
+.acard .ic{width:44px;height:44px;border-radius:14px;background:var(--g);display:grid;place-items:center;flex:none}
+.acard .ic svg{stroke:#1a0d02}
+.acard b{display:block;font-size:16px}
+.acard p{font-size:13px;color:var(--m);margin-top:2px}
+.acard .btnrow{margin-top:10px}
+.pickbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:16px;background:#2a1810;color:var(--o);border:1px solid #4a2a18;font-weight:700;cursor:pointer}
+.pickbtn svg{stroke:var(--o)}
+.pickbtn input{display:none}
 .nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(460px,calc(100% - 20px));display:flex;justify-content:space-around;padding:10px 4px;border-radius:28px;background:rgba(16,19,30,.96);border:1px solid #3a2418;backdrop-filter:blur(12px);z-index:20}
 .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#a4abc4;font-size:12px;font-weight:600;padding:4px 0;transition:.25s}
 .nav button svg{width:24px;height:24px}
@@ -142,9 +146,10 @@ const P = new URLSearchParams(location.search);
 const num = k => parseInt(P.get(k) || "0", 10);
 const tu = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
 
-// ইউজারের আইডি ও নাম বট থেকে আসে, না এলে Telegram থেকে
+// আইডি ও নাম বট থেকে আসে; ছবি Telegram থেকে আসে
 const UID = P.get("uid") || String(tu.id || "");
 const NAME = P.get("nm") || [tu.first_name, tu.last_name].filter(Boolean).join(" ") || "ব্যবহারকারী";
+const PHOTO = tu.photo_url || "";
 const IS_ADMIN = P.get("adm") === "1";
 
 const S = {
@@ -182,6 +187,9 @@ const ICON = {
   trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
   image: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
   send:  '<svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+  video: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 8l-6 4 6 4z"/></svg>',
+  chat:  '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  settings:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   logo:  '<svg viewBox="0 0 64 64"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6a1f"/><stop offset="1" stop-color="#ffbf2f"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(#lg)"/><path d="M26 20v24l20-12z" fill="#1a0d02"/></svg>'
 };
 
@@ -197,10 +205,10 @@ let page = "home";
 function toast(t){
   const el = document.getElementById("toast");
   el.textContent = t; el.classList.add("show");
-  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2300);
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2400);
 }
 function tgSend(obj){
-  if (!tg) return toast("এটি Telegram-এর ভেতর থেকে খুলুন");
+  if (!tg || !tg.initData) return toast("এই কাজ শুধু Telegram-এর ভেতর থেকে হয়");
   tg.sendData(JSON.stringify(obj));
 }
 function share(){
@@ -208,10 +216,14 @@ function share(){
   const u = "https://t.me/share/url?url=" + encodeURIComponent(refLink()) + "&text=" + encodeURIComponent("এই বটে ভিডিও আনলক করুন");
   if (tg) tg.openTelegramLink(u); else window.open(u, "_blank");
 }
+function openBotChat(){
+  const u = "https://t.me/" + BOT;
+  if (tg) tg.openTelegramLink(u); else window.open(u, "_blank");
+}
 function copyText(text){
-  const done = () => toast("লিংক কপি হয়েছে");
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text));
-  else fallbackCopy(text);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => toast("লিংক কপি হয়েছে"), () => fallbackCopy(text));
+  } else fallbackCopy(text);
 }
 function fallbackCopy(text){
   const ta = document.createElement("textarea");
@@ -222,7 +234,12 @@ function fallbackCopy(text){
 function escp(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function fixB64(s){ s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return s; }
 function toCompact(dataUrl){ return dataUrl.split(",")[1].replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
-function initial(){ return escp((NAME || "U").charAt(0)); }
+function avatar(cls){
+  const letter = escp((NAME || "U").charAt(0));
+  return PHOTO
+    ? `<span class="${cls}"><img src="${escp(PHOTO)}" alt="" referrerpolicy="no-referrer" onerror="this.remove();this.parentNode.textContent='${letter}'"></span>`
+    : `<span class="${cls}">${letter}</span>`;
+}
 
 function nav(){
   document.getElementById("nav").innerHTML = TABS.map(t =>
@@ -231,21 +248,16 @@ function nav(){
 function go(id){ page = id; nav(); render(); window.scrollTo(0, 0); }
 function render(){
   const app = document.getElementById("app");
-  if (page === "home") app.innerHTML = homeView();
-  if (page === "fav") app.innerHTML = favView();
-  if (page === "profile") app.innerHTML = profileView();
-  if (page === "links") app.innerHTML = linksView();
-  if (page === "admin") app.innerHTML = adminView();
-  app.firstElementChild && app.firstElementChild.classList.add("view");
+  const views = {home: homeView, fav: favView, profile: profileView, links: linksView, admin: adminView};
+  app.innerHTML = `<div class="view">${views[page]()}</div>`;
 }
 
 /* ---------- হোম ---------- */
 function homeView(){
-  const need = S.need, all = S.done >= need, un = S.unlocked;
-  const favOn = LS.get(FAV) === "1";
+  const all = S.done >= S.need, un = S.unlocked;
   let h = `
   <section class="card hero">
-    <div class="pill"><span class="avatar">${initial()}</span>${ICON.users}<span>${S.refs}</span></div>
+    <div class="pill">${avatar("avatar")}${ICON.users}<span>${S.refs}</span></div>
     <h1>${escp(S.title)}</h1>
     <p>Premium Viral Content</p>
   </section>
@@ -257,19 +269,19 @@ function homeView(){
   h += `
   <div class="search"><input id="q" placeholder="পছন্দের ভিডিও খুঁজুন..." oninput="filterHome(this.value)"><button class="sbtn" aria-label="খুঁজুন">${ICON.search}</button></div>
   <div class="chip">সবগুলো <b>${S.videos}</b></div>
-  <section id="vlist">${videoCard(all, un, favOn)}</section>`;
+  <section id="vlist">${videoCard(all, un)}</section>`;
   return h;
 }
 function filterHome(v){
   const el = document.getElementById("vlist");
-  el.innerHTML = v.trim() && !S.title.toLowerCase().includes(v.trim().toLowerCase())
+  const q = v.trim().toLowerCase();
+  el.innerHTML = q && !S.title.toLowerCase().includes(q)
     ? `<div class="empty">${ICON.search}<p>কোনো ভিডিও পাওয়া যায়নি।</p></div>`
-    : videoCard(S.done >= S.need, S.unlocked, LS.get(FAV) === "1");
+    : videoCard(S.done >= S.need, S.unlocked);
 }
-function videoCard(all, un, favOn){
-  const media = THUMB_SRC
-    ? `<img src="${THUMB_SRC}" alt="">`
-    : `<div class="logo">${ICON.logo}</div>`;
+function videoCard(all, un){
+  const favOn = LS.get(FAV) === "1";
+  const media = THUMB_SRC ? `<img src="${THUMB_SRC}" alt="">` : `<div class="logo">${ICON.logo}</div>`;
   const lockOverlay = (un || all) ? "" : `<div class="lock"><div class="lockring">${ICON.lock}</div></div>`;
   let body = "";
   if (S.videos === 0) {
@@ -301,20 +313,19 @@ function videoCard(all, un, favOn){
     </div>
     <div class="vbody">
       <div class="vtitle">${escp(S.title)}</div>
-      <div class="meta">${ICON.clock}<span>${un ? "মেয়াদ অনুযায়ী দেখুন" : "অ্যাড দেখে আনলক করুন"}</span></div>
+      <div class="meta">${ICON.clock}<span>${un ? "ভিডিও আপনার চ্যাটে আছে" : "অ্যাড দেখে ভিডিও আনলক করুন"}</span></div>
       ${body}
     </div>
   </section>`;
 }
 function toggleFav(){
   LS.set(FAV, LS.get(FAV) === "1" ? "0" : "1");
-  page = "home"; render();
+  render();
 }
 
 /* ---------- পছন্দ ---------- */
 function favView(){
-  const on = LS.get(FAV) === "1";
-  if (!on) return `<div class="sec">${ICON.heart}পছন্দের ভিডিও</div>
+  if (LS.get(FAV) !== "1") return `<div class="sec">${ICON.heart}পছন্দের ভিডিও</div>
     <div class="empty">${ICON.heart}<p>পছন্দের কোনো ভিডিও নেই। হোমে হার্ট বাটনে চাপুন।</p></div>`;
   return `<div class="sec">${ICON.heart}পছন্দের ভিডিও</div>
     <section class="card"><div class="vtitle">${escp(S.title)}</div>
@@ -324,16 +335,17 @@ function favView(){
 
 /* ---------- প্রোফাইল ---------- */
 function profileView(){
+  const linkText = UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন";
   return `<div class="sec">${ICON.user}প্রোফাইল</div>
   <section class="card center">
-    <div class="bigavatar">${initial()}</div>
+    <div class="bigavatar">${PHOTO ? `<img src="${escp(PHOTO)}" alt="" referrerpolicy="no-referrer" onerror="this.remove();this.parentNode.textContent='${escp((NAME||'U').charAt(0))}'">` : escp((NAME || "U").charAt(0))}</div>
     <div class="pname">${escp(NAME)}</div>
-    <div class="pid">ID: ${escp(UID || "—")}</div>
+    <div class="pid">আইডি: ${escp(UID || "—")}</div>
     <div class="stats">
       <div class="stat"><b>${S.refs}</b><span>মোট রেফার</span></div>
       <div class="stat"><b>${S.credits}</b><span>ফ্রি আনলক</span></div>
     </div>
-    <div class="linkbox">${ICON.link}<span>${escp(UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন")}</span></div>
+    <div class="linkbox">${ICON.link}<span>${escp(linkText)}</span></div>
     <button class="big" onclick="copyText(refLink())" ${UID ? "" : "disabled"}>${ICON.copy}কপি করুন</button>
     <button class="big ghost" onclick="share()" ${UID ? "" : "disabled"}>${ICON.share}শেয়ার করুন</button>
   </section>`;
@@ -341,11 +353,12 @@ function profileView(){
 
 /* ---------- লিংক ---------- */
 function linksView(){
+  const linkText = UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন";
   return `<div class="sec">${ICON.link}লিংক</div>
   <section class="card">
     <div class="vtitle">আপনার রেফারেল লিংক</div>
     <p class="muted">এই লিংকে কেউ জয়েন করলে আপনাকে বটে জানানো হবে এবং আপনি ১টি ফ্রি আনলক পাবেন।</p>
-    <div class="linkbox" style="margin-top:12px">${ICON.link}<span>${escp(UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন")}</span></div>
+    <div class="linkbox" style="margin-top:12px">${ICON.link}<span>${escp(linkText)}</span></div>
     <button class="big" onclick="copyText(refLink())" ${UID ? "" : "disabled"}>${ICON.copy}লিংক কপি করুন</button>
     <button class="big ghost" onclick="share()" ${UID ? "" : "disabled"}>${ICON.share}শেয়ার করুন</button>
   </section>`;
@@ -361,67 +374,93 @@ function adminView(){
     <div class="stats" style="margin-top:0">
       <div class="stat"><b>${num("su")}</b><span>মোট ইউজার</span></div>
       <div class="stat"><b>${num("st")}</b><span>মোট আনলক</span></div>
-      <div class="stat"><b>${num("v")}</b><span>ভিডিও</span></div>
+      <div class="stat"><b>${num("v")}</b><span>ভিডিও সংখ্যা</span></div>
       <div class="stat"><b>${num("n") || 4}</b><span>অ্যাড সংখ্যা</span></div>
     </div>
   </section>
 
-  <section class="card">
-    <label class="field">থাম্বনেইল (গ্যালারি থেকে বাছাই করুন)</label>
-    <label class="pick">
-      <span class="pv">${THUMB_SRC ? `<img src="${THUMB_SRC}" alt="">` : ICON.image}</span>
-      <span><b>ছবি বাছাই করুন</b><span class="muted" style="display:block">ছোট করে সেভ হবে</span></span>
-      <input type="file" accept="image/*" onchange="pickThumb(this.files[0])">
-    </label>
-
-    <label class="field">শিরোনাম</label>
-    <input class="input" id="f_t" value="${escp(P.get("t") || "")}">
-    <label class="field">নোটিশ (ইউজার মিনি অ্যাপে দেখবে)</label>
-    <textarea class="input" id="f_no">${escp(P.get("no") || "")}</textarea>
-    <label class="field">শেষ মেসেজ (ভিডিওর পর বটে যাবে)</label>
-    <textarea class="input" id="f_f">${escp(P.get("f") || "")}</textarea>
-    <label class="field">অ্যাড লিংক (প্রতি লাইনে একটি, https দিয়ে শুরু)</label>
-    <textarea class="input" id="f_a" style="min-height:110px">${escp(P.get("ads") || "")}</textarea>
-    <div class="two">
-      <div><label class="field">কয়টি অ্যাড</label><input class="input" id="f_n" type="number" min="1" value="${num("n") || 4}"></div>
-      <div><label class="field">অপেক্ষা (সেকেন্ড)</label><input class="input" id="f_w" type="number" min="1" value="${num("w") || 15}"></div>
+  <section class="acard">
+    <div class="ic">${ICON.image}</div>
+    <div style="flex:1">
+      <b>থাম্বনেইল বদলান</b>
+      <p>গ্যালারি থেকে একটি ছবি বাছাই করুন। এটি ভিডিও কার্ডে দেখাবে। ছবি ছোট করে সেভ হয়।</p>
+      <label class="pickbtn btnrow">${ICON.image}ছবি বাছাই করুন<input type="file" accept="image/*" onchange="pickThumb(this.files[0])"></label>
     </div>
-    <label class="field">ভিডিওর মেয়াদ (০ = সবসময়)</label>
-    <div class="two">
-      <input class="input" id="f_e" type="number" min="0" value="${val}">
-      <select class="input" id="f_u">
-        <option value="1" ${unit === 1 ? "selected" : ""}>মিনিট</option>
-        <option value="60" ${unit === 60 ? "selected" : ""}>ঘণ্টা</option>
-        <option value="1440" ${unit === 1440 ? "selected" : ""}>দিন</option>
-      </select>
-    </div>
-    <div class="tog"><span>ভিডিও চালু আছে</span><label class="sw"><input type="checkbox" id="f_en" ${P.get("en") === "0" ? "" : "checked"}><span></span></label></div>
-    <div class="tog"><span>ডাউনলোড ও স্ক্রিনশট সুরক্ষা</span><label class="sw"><input type="checkbox" id="f_pr" ${P.get("pr") === "0" ? "" : "checked"}><span></span></label></div>
-    <button class="big" onclick="saveAdmin()">${ICON.check}সেভ করুন</button>
   </section>
 
-  <section class="card">
-    <div class="vtitle">ভিডিও ম্যানেজ</div>
-    <p class="muted">নতুন ভিডিও যোগ করতে বটে <b>/upload</b> লিখে ভিডিও পাঠান। বর্তমানে ${num("v")}টি ভিডিও আছে।</p>
-    <button class="big danger" onclick="tgSend({a:'admin_clearvideos'})">${ICON.trash}ভিডিও তালিকা খালি করুন</button>
+  <section class="acard">
+    <div class="ic">${ICON.settings}</div>
+    <div style="flex:1">
+      <b>সেটিংস সেভ করুন</b>
+      <p>নিচের ঘরগুলো বদলে এই বাটনে চাপুন। শিরোনাম, অ্যাড লিংক, অ্যাডের সংখ্যা, অপেক্ষার সময়, মেয়াদ এবং সুরক্ষা সেভ হবে।</p>
+      <label class="field">শিরোনাম</label>
+      <input class="input" id="f_t" value="${escp(P.get("t") || "")}">
+      <label class="field">অ্যাড লিংক (প্রতি লাইনে একটি, https দিয়ে শুরু)</label>
+      <textarea class="input" id="f_a" style="min-height:100px">${escp(P.get("ads") || "")}</textarea>
+      <div class="two">
+        <div><label class="field">কয়টি অ্যাড</label><input class="input" id="f_n" type="number" min="1" value="${num("n") || 4}"></div>
+        <div><label class="field">অপেক্ষা (সেকেন্ড)</label><input class="input" id="f_w" type="number" min="1" value="${num("w") || 15}"></div>
+      </div>
+      <label class="field">ভিডিওর মেয়াদ (০ = সবসময়)</label>
+      <div class="two">
+        <input class="input" id="f_e" type="number" min="0" value="${val}">
+        <select class="input" id="f_u">
+          <option value="1" ${unit === 1 ? "selected" : ""}>মিনিট</option>
+          <option value="60" ${unit === 60 ? "selected" : ""}>ঘণ্টা</option>
+          <option value="1440" ${unit === 1440 ? "selected" : ""}>দিন</option>
+        </select>
+      </div>
+      <div class="tog"><span>ভিডিও চালু আছে</span><label class="sw"><input type="checkbox" id="f_en" ${P.get("en") === "0" ? "" : "checked"}><span></span></label></div>
+      <div class="tog"><span>ডাউনলোড ও স্ক্রিনশট সুরক্ষা</span><label class="sw"><input type="checkbox" id="f_pr" ${P.get("pr") === "0" ? "" : "checked"}><span></span></label></div>
+      <button class="big" onclick="saveAdmin()">${ICON.check}সেটিংস সেভ করুন</button>
+    </div>
+  </section>
+
+  <section class="acard">
+    <div class="ic">${ICON.bell}</div>
+    <div style="flex:1">
+      <b>সব ইউজারকে নোটিশ পাঠান</b>
+      <p>এখানে লিখে পাঠালে বট সব ইউজারের চ্যাটে মেসেজ পাঠাবে।</p>
+      <textarea class="input" id="f_no" style="margin-top:8px" placeholder="নোটিশের লেখা লিখুন"></textarea>
+      <button class="big" onclick="sendNotice()">${ICON.send}সবাইকে পাঠান</button>
+    </div>
+  </section>
+
+  <section class="acard">
+    <div class="ic">${ICON.video}</div>
+    <div style="flex:1">
+      <b>ভিডিও যোগ করুন</b>
+      <p>বট চ্যাট খুলে সেখানে <b>/upload</b> লিখুন, তারপর ভিডিওটি পাঠান। একটি করে পাঠাতে হবে। এখন ${num("v")}টি ভিডিও আছে।</p>
+      <button class="big ghost" onclick="openBotChat()">${ICON.chat}বট চ্যাট খুলুন</button>
+    </div>
+  </section>
+
+  <section class="acard">
+    <div class="ic">${ICON.trash}</div>
+    <div style="flex:1">
+      <b>ভিডিও তালিকা খালি করুন</b>
+      <p>এতে বটের ভিডিও তালিকা মুছে যাবে। আগে পাঠানো ভিডিও ইউজারের চ্যাটে থেকে যাবে।</p>
+      <button class="big danger" onclick="tgSend({a:'admin_clearvideos'})">${ICON.trash}ভিডিও তালিকা খালি করুন</button>
+    </div>
   </section>`;
 }
 function pickThumb(file){
   if (!file) return;
   const img = new Image();
   img.onload = () => {
-    let w = 120, q = 0.5, out = "";
-    for (let i = 0; i < 6; i++) {
+    let w = 96, q = 0.5, out = "";
+    for (let i = 0; i < 8; i++) {
       const c = document.createElement("canvas");
-      c.width = w; c.height = Math.round(img.height * w / img.width);
+      c.width = w; c.height = Math.max(1, Math.round(img.height * w / img.width));
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
       out = toCompact(c.toDataURL("image/jpeg", q));
-      if (out.length <= 2400) break;
-      w = Math.round(w * 0.8); q = Math.max(0.3, q - 0.05);
+      if (out.length <= 1000) break;
+      w = Math.max(40, Math.round(w * 0.8)); q = Math.max(0.2, q - 0.05);
     }
-    if (out.length > 2400) return toast("ছবিটি সেভ করা গেল না, অন্য ছবি বাছাই করুন");
+    if (out.length > 1000) return toast("ছবিটি সেভ করা গেল না, অন্য ছবি বাছাই করুন");
     tgSend({a: "admin_thumb", thumb: out});
   };
+  img.onerror = () => toast("এই ছবিটি খোলা গেল না");
   img.src = URL.createObjectURL(file);
 }
 function saveAdmin(){
@@ -429,8 +468,8 @@ function saveAdmin(){
   tgSend({
     a: "admin_save",
     title: document.getElementById("f_t").value,
-    notice: document.getElementById("f_no").value,
-    final: document.getElementById("f_f").value,
+    notice: "",
+    final: "",
     ads: document.getElementById("f_a").value,
     need: +document.getElementById("f_n").value || 1,
     wait: +document.getElementById("f_w").value || 15,
@@ -438,6 +477,11 @@ function saveAdmin(){
     enabled: document.getElementById("f_en").checked,
     protect: document.getElementById("f_pr").checked
   });
+}
+function sendNotice(){
+  const text = document.getElementById("f_no").value.trim();
+  if (!text) return toast("নোটিশের লেখা লিখুন");
+  tgSend({a: "admin_notice", text});
 }
 
 nav();
