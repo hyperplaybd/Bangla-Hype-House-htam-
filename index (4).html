@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bangla Hype House</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#07080f;--c:#10131e;--c2:#171b2a;--t:#f3f4fa;--m:#8a91ad;--o:#ff6a1f;--y:#ffbf2f;--ok:#22c55e;--ln:#262b40;--g:linear-gradient(135deg,#ff6a1f,#ffbf2f)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{color:var(--t);font:15px/1.5 "Hind Siliguri",system-ui,sans-serif;min-height:100vh;padding:14px 14px 130px;-webkit-user-select:none;user-select:none;overflow-x:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--t);-webkit-user-select:text;user-select:text}
+svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:480px;margin:0 auto}
+.glow{position:fixed;width:340px;height:340px;border-radius:50%;filter:blur(90px);opacity:.22;z-index:-1;pointer-events:none}
+.g1{background:#ff6a1f;top:-120px;left:-100px}.g2{background:#8b3dff;bottom:-140px;right:-120px}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes sh{to{transform:translateX(100%)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,106,31,.5)}100%{box-shadow:0 0 0 20px rgba(255,106,31,0)}}
+.view{animation:in .4s both}
+.card{background:var(--c);border:1px solid var(--ln);border-radius:24px;padding:18px;margin-bottom:14px}
+.hero{position:relative;text-align:center;padding:26px 16px;background:linear-gradient(160deg,#22140f,#10131e 70%);border-color:#3a2418;overflow:hidden}
+.hero h1{font:700 26px/1.2 Cinzel,serif;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 40px}
+.hero p{font-size:11px;letter-spacing:3px;color:#c9a893;margin-top:8px;text-transform:uppercase}
+.pill{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:30px;background:#0b0d16;border:1px solid #3a2418;font-weight:700}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--g);color:#1a0d02;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.pill svg{width:16px;height:16px;stroke:var(--y)}
+.invite{display:flex;align-items:center;gap:12px;padding:18px;border-radius:24px;background:var(--g);color:#1a0d02;margin-bottom:14px}
+.invite div{flex:1}
+.invite b{display:block;font-size:17px}
+.invite span{font-size:13px;opacity:.9}
+.invite button{background:#0b0d16;color:#fff;padding:12px 18px;border-radius:16px;font-weight:600}
+.notice{display:flex;gap:10px;padding:14px 16px;border-radius:18px;background:#1a1530;border:1px solid #382d66;color:#dcd6ff;margin-bottom:14px;font-size:14px}
+.notice svg{stroke:#a995ff}
+.search{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 20px;border-radius:30px;background:var(--c);border:1px solid var(--ln);margin-bottom:14px}
+.search input{flex:1;background:none;border:0;outline:0;padding:10px 0;font-size:15px}
+.search input::placeholder{color:var(--m)}
+.sbtn{width:48px;height:48px;border-radius:50%;background:var(--g);color:#1a0d02;display:grid;place-items:center}
+.chip{display:inline-flex;align-items:center;gap:12px;padding:9px 18px;border-radius:30px;background:var(--g);color:#1a0d02;font-weight:700;margin-bottom:14px}
+.chip b{background:rgba(255,255,255,.4);border-radius:20px;padding:0 10px;font-size:14px}
+.vcard{padding:0;overflow:hidden}
+.thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#2a1810,#1d1740);overflow:hidden}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb .logo{position:absolute;inset:0;display:grid;place-items:center}
+.thumb .logo svg{width:84px;height:84px;opacity:.55;stroke:none}
+.thumb .lock{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,6,12,.25)}
+.lockring{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.15);display:grid;place-items:center;animation:pulse 2s infinite}
+.lockring svg{stroke:#fff;width:28px;height:28px}
+.eye{position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:24px;background:rgba(10,8,8,.8);font-weight:700;font-size:14px}
+.eye svg{width:17px;height:17px}
+.fav{position:absolute;top:12px;right:12px;width:50px;height:50px;border-radius:50%;background:rgba(10,8,8,.75);display:grid;place-items:center;color:#fff}
+.fav.on{color:var(--o)}
+.fav.on svg{fill:var(--o)}
+.vbody{padding:18px}
+.vtitle{font-size:21px;font-weight:700;line-height:1.3}
+.meta{display:flex;align-items:center;gap:8px;color:var(--m);font-size:14px;margin-top:6px}
+.meta svg{width:17px;height:17px}
+.bar{height:8px;background:var(--c2);border-radius:9px;overflow:hidden;margin:14px 0 6px}
+.bar i{display:block;height:100%;background:var(--g);border-radius:9px;transition:width .6s}
+.step{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:var(--c2);margin-top:8px;border:1px solid transparent}
+.step.cur{border-color:var(--o)}
+.step .n{width:32px;height:32px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-weight:700;color:var(--m);flex:none}
+.step .n svg{width:16px;height:16px;stroke:#fff}
+.step.dn .n{background:var(--ok)}
+.step .l{flex:1}
+.step .s{font-size:13px;color:var(--m)}
+.actions{display:flex;gap:10px;align-items:flex-start;margin-top:16px}
+.primary{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:18px;background:var(--g);color:#1a0d02;font-weight:700;font-size:16px;box-shadow:0 8px 24px rgba(255,106,31,.3)}
+.primary svg{stroke:#1a0d02}
+.primary:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);transform:translateX(-100%);animation:sh 2.6s infinite}
+.primary[disabled]{opacity:.5;box-shadow:none}
+.primary[disabled]:before{display:none}
+.side{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--o);min-width:66px}
+.sqbtn{width:66px;height:66px;border-radius:18px;background:var(--c2);border:1px solid var(--ln);display:grid;place-items:center;color:var(--o)}
+.sqbtn[disabled]{opacity:.4}
+.big{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:18px;background:var(--g);color:#1a0d02;font-weight:700;font-size:16px;margin-top:12px;box-shadow:0 8px 24px rgba(255,106,31,.3)}
+.big svg{stroke:#1a0d02}
+.big.ghost{background:#2a1810;color:var(--o);border:1px solid #4a2a18;box-shadow:none}
+.big.ghost svg{stroke:var(--o)}
+.big.danger{background:#3a1212;color:#ff7b7b;border:1px solid #5a1f1f;box-shadow:none}
+.big.danger svg{stroke:#ff7b7b}
+.big[disabled]{opacity:.5}
+.ok{color:var(--ok);font-weight:600;margin-top:12px}
+.muted{color:var(--m);font-size:13px;margin-top:6px}
+.sec{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;margin:4px 2px 14px}
+.sec svg{stroke:var(--o);width:24px;height:24px}
+.center{text-align:center}
+.bigavatar{width:104px;height:104px;border-radius:50%;margin:8px auto 14px;display:grid;place-items:center;font-size:42px;font-weight:700;color:#1a0d02;background:var(--g);box-shadow:0 0 0 4px var(--c),0 0 0 7px var(--o)}
+.pname{font-size:24px;font-weight:700}
+.pid{color:var(--m);font-size:15px;margin-top:4px;word-break:break-all}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.stat{background:var(--c2);border:1px solid var(--ln);border-radius:18px;padding:16px 8px}
+.stat b{display:block;font-size:30px;color:var(--o);font-weight:700;line-height:1.1}
+.stat span{font-size:14px;color:var(--m)}
+.linkbox{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--c2);border:1px solid var(--ln);border-radius:18px;font-size:14px;color:#e6c9b8;text-align:left;word-break:break-all}
+.linkbox svg{stroke:var(--o)}
+.empty{text-align:center;padding:40px 16px;color:var(--m)}
+.empty svg{width:44px;height:44px;stroke:var(--o);margin:0 auto 10px;display:block}
+.field{display:block;font-size:13px;color:var(--m);margin:14px 0 6px}
+.input{width:100%;background:var(--c2);border:1px solid var(--ln);border-radius:14px;padding:11px 13px;outline:0}
+textarea.input{min-height:72px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--c2);border:1px solid var(--ln);border-radius:16px;margin-top:10px}
+.sw{position:relative;width:52px;height:30px;flex:none}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;border-radius:30px;background:#2a2f44;transition:.25s}
+.sw span:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.25s}
+.sw input:checked+span{background:var(--g)}
+.sw input:checked+span:before{transform:translateX(22px)}
+.pick{display:flex;align-items:center;gap:12px;padding:12px;background:var(--c2);border:1px dashed #4a2a18;border-radius:16px;margin-top:6px;cursor:pointer}
+.pick .pv{width:96px;height:54px;border-radius:10px;background:#1d1740;overflow:hidden;display:grid;place-items:center;flex:none}
+.pick .pv img{width:100%;height:100%;object-fit:cover}
+.pick input{display:none}
+.vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:var(--c2);margin-top:8px;font-size:14px}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(460px,calc(100% - 20px));display:flex;justify-content:space-around;padding:10px 4px;border-radius:28px;background:rgba(16,19,30,.96);border:1px solid #3a2418;backdrop-filter:blur(12px);z-index:20}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#a4abc4;font-size:12px;font-weight:600;padding:4px 0;transition:.25s}
+.nav button svg{width:24px;height:24px}
+.nav button.on{color:var(--o)}
+.nav button.on svg{stroke:var(--o);transform:translateY(-2px)}
+.toast{position:fixed;left:50%;bottom:112px;transform:translateX(-50%);max-width:86%;background:#0b0d16;border:1px solid var(--ln);padding:11px 18px;border-radius:14px;font-size:14px;text-align:center;opacity:0;transition:.3s;pointer-events:none;z-index:30}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div>
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav"></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== সেটিংস =====
+const BOT = "BanglaHypr0Housebot";
+// ==================
+
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+const P = new URLSearchParams(location.search);
+const num = k => parseInt(P.get(k) || "0", 10);
+const tu = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+
+// ইউজারের আইডি ও নাম বট থেকে আসে, না এলে Telegram থেকে
+const UID = P.get("uid") || String(tu.id || "");
+const NAME = P.get("nm") || [tu.first_name, tu.last_name].filter(Boolean).join(" ") || "ব্যবহারকারী";
+const IS_ADMIN = P.get("adm") === "1";
+
+const S = {
+  done: num("d"), need: Math.max(1, num("n") || 4), wait: num("w") || 15,
+  credits: num("c"), refs: num("r"), unlocked: P.get("u") === "1",
+  videos: num("v"), title: P.get("t") || "ভিডিও আনলক করুন",
+  notice: P.get("no") || "", thumb: P.get("th") || ""
+};
+const THUMB_SRC = S.thumb ? "data:image/jpeg;base64," + fixB64(S.thumb) : "";
+const refLink = () => "https://t.me/" + BOT + "?start=r" + UID;
+
+const LS = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+};
+const FAV = "fav:" + UID;
+
+const ICON = {
+  home:  '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',
+  heart: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>',
+  user:  '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  link:  '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>',
+  shield:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+  search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  lock:  '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  play:  '<svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>',
+  share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
+  copy:  '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  eye:   '<svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  gift:  '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+  users: '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  bell:  '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  image: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+  send:  '<svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+  logo:  '<svg viewBox="0 0 64 64"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6a1f"/><stop offset="1" stop-color="#ffbf2f"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(#lg)"/><path d="M26 20v24l20-12z" fill="#1a0d02"/></svg>'
+};
+
+const TABS = [
+  {id:"home", label:"হোম", ic:"home"},
+  {id:"fav", label:"পছন্দ", ic:"heart"},
+  {id:"profile", label:"প্রোফাইল", ic:"user"},
+  {id:"links", label:"লিংক", ic:"link"}
+];
+if (IS_ADMIN) TABS.push({id:"admin", label:"অ্যাডমিন", ic:"shield"});
+let page = "home";
+
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2300);
+}
+function tgSend(obj){
+  if (!tg) return toast("এটি Telegram-এর ভেতর থেকে খুলুন");
+  tg.sendData(JSON.stringify(obj));
+}
+function share(){
+  if (!UID) return toast("লিংক পেতে Telegram থেকে আবার খুলুন");
+  const u = "https://t.me/share/url?url=" + encodeURIComponent(refLink()) + "&text=" + encodeURIComponent("এই বটে ভিডিও আনলক করুন");
+  if (tg) tg.openTelegramLink(u); else window.open(u, "_blank");
+}
+function copyText(text){
+  const done = () => toast("লিংক কপি হয়েছে");
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text));
+  else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta = document.createElement("textarea");
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); toast("লিংক কপি হয়েছে"); } catch(e) { toast(text); }
+  ta.remove();
+}
+function escp(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fixB64(s){ s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return s; }
+function toCompact(dataUrl){ return dataUrl.split(",")[1].replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function initial(){ return escp((NAME || "U").charAt(0)); }
+
+function nav(){
+  document.getElementById("nav").innerHTML = TABS.map(t =>
+    `<button class="${page === t.id ? "on" : ""}" onclick="go('${t.id}')">${ICON[t.ic]}<span>${t.label}</span></button>`).join("");
+}
+function go(id){ page = id; nav(); render(); window.scrollTo(0, 0); }
+function render(){
+  const app = document.getElementById("app");
+  if (page === "home") app.innerHTML = homeView();
+  if (page === "fav") app.innerHTML = favView();
+  if (page === "profile") app.innerHTML = profileView();
+  if (page === "links") app.innerHTML = linksView();
+  if (page === "admin") app.innerHTML = adminView();
+  app.firstElementChild && app.firstElementChild.classList.add("view");
+}
+
+/* ---------- হোম ---------- */
+function homeView(){
+  const need = S.need, all = S.done >= need, un = S.unlocked;
+  const favOn = LS.get(FAV) === "1";
+  let h = `
+  <section class="card hero">
+    <div class="pill"><span class="avatar">${initial()}</span>${ICON.users}<span>${S.refs}</span></div>
+    <h1>${escp(S.title)}</h1>
+    <p>Premium Viral Content</p>
+  </section>
+  <section class="invite">
+    <div><b>বন্ধুদের ইনভাইট করুন</b><span>প্রতিটি সফল রেফারে ১টি ভিডিও আনলক ফ্রি!</span></div>
+    <button onclick="share()">Invite</button>
+  </section>`;
+  if (S.notice) h += `<section class="notice">${ICON.bell}<div>${escp(S.notice)}</div></section>`;
+  h += `
+  <div class="search"><input id="q" placeholder="পছন্দের ভিডিও খুঁজুন..." oninput="filterHome(this.value)"><button class="sbtn" aria-label="খুঁজুন">${ICON.search}</button></div>
+  <div class="chip">সবগুলো <b>${S.videos}</b></div>
+  <section id="vlist">${videoCard(all, un, favOn)}</section>`;
+  return h;
+}
+function filterHome(v){
+  const el = document.getElementById("vlist");
+  el.innerHTML = v.trim() && !S.title.toLowerCase().includes(v.trim().toLowerCase())
+    ? `<div class="empty">${ICON.search}<p>কোনো ভিডিও পাওয়া যায়নি।</p></div>`
+    : videoCard(S.done >= S.need, S.unlocked, LS.get(FAV) === "1");
+}
+function videoCard(all, un, favOn){
+  const media = THUMB_SRC
+    ? `<img src="${THUMB_SRC}" alt="">`
+    : `<div class="logo">${ICON.logo}</div>`;
+  const lockOverlay = (un || all) ? "" : `<div class="lock"><div class="lockring">${ICON.lock}</div></div>`;
+  let body = "";
+  if (S.videos === 0) {
+    body = `<p class="muted">এখনো কোনো ভিডিও যোগ হয়নি।</p>`;
+  } else if (un) {
+    body = `<p class="ok">ভিডিও বটের চ্যাটে পাঠানো হয়েছে।</p>
+      <button class="big" onclick="tgSend({a:'watch'})">${ICON.play}ভিডিও আবার দেখুন</button>`;
+  } else if (all) {
+    body = `<div class="bar"><i style="width:100%"></i></div>
+      <button class="big" onclick="tgSend({a:'watch'})">${ICON.play}ভিডিও দেখুন</button>`;
+  } else {
+    let steps = "";
+    for (let i = 0; i < S.need; i++) {
+      const d = i < S.done, c = i === S.done;
+      steps += `<div class="step ${d ? "dn" : ""} ${c ? "cur" : ""}"><div class="n">${d ? ICON.check : (i + 1)}</div><span class="l">অ্যাড ${i + 1}</span><span class="s">${d ? "সম্পন্ন" : c ? "পরবর্তী" : "লক"}</span></div>`;
+    }
+    body = `<div class="bar"><i style="width:${S.done / S.need * 100}%"></i></div>${steps}
+      <div class="actions">
+        <button class="primary" onclick="tgSend({a:'click'})">${ICON.lock}UNLOCK (${S.done}/${S.need})</button>
+        <div class="side"><button class="sqbtn" ${S.credits > 0 ? "" : "disabled"} onclick="tgSend({a:'credit'})" aria-label="ক্রেডিট">${ICON.gift}</button>Use Credit</div>
+        <button class="sqbtn" onclick="share()" aria-label="শেয়ার">${ICON.share}</button>
+      </div>
+      <p class="muted">প্রতিটি অ্যাডে ${S.wait} সেকেন্ড অপেক্ষা করুন। অ্যাড বন্ধ করে ফিরে এলে বটে "যাচাই করুন" চাপুন।</p>`;
+  }
+  return `<section class="card vcard">
+    <div class="thumb">${media}${lockOverlay}
+      <div class="eye">${ICON.eye}<span>${S.videos}</span></div>
+      <button class="fav ${favOn ? "on" : ""}" onclick="toggleFav()" aria-label="পছন্দ">${ICON.heart}</button>
+    </div>
+    <div class="vbody">
+      <div class="vtitle">${escp(S.title)}</div>
+      <div class="meta">${ICON.clock}<span>${un ? "মেয়াদ অনুযায়ী দেখুন" : "অ্যাড দেখে আনলক করুন"}</span></div>
+      ${body}
+    </div>
+  </section>`;
+}
+function toggleFav(){
+  LS.set(FAV, LS.get(FAV) === "1" ? "0" : "1");
+  page = "home"; render();
+}
+
+/* ---------- পছন্দ ---------- */
+function favView(){
+  const on = LS.get(FAV) === "1";
+  if (!on) return `<div class="sec">${ICON.heart}পছন্দের ভিডিও</div>
+    <div class="empty">${ICON.heart}<p>পছন্দের কোনো ভিডিও নেই। হোমে হার্ট বাটনে চাপুন।</p></div>`;
+  return `<div class="sec">${ICON.heart}পছন্দের ভিডিও</div>
+    <section class="card"><div class="vtitle">${escp(S.title)}</div>
+    <div class="meta">${ICON.eye}<span>${S.videos} ভিডিও</span></div>
+    <button class="big" onclick="go('home')">${ICON.play}হোমে দেখুন</button></section>`;
+}
+
+/* ---------- প্রোফাইল ---------- */
+function profileView(){
+  return `<div class="sec">${ICON.user}প্রোফাইল</div>
+  <section class="card center">
+    <div class="bigavatar">${initial()}</div>
+    <div class="pname">${escp(NAME)}</div>
+    <div class="pid">ID: ${escp(UID || "—")}</div>
+    <div class="stats">
+      <div class="stat"><b>${S.refs}</b><span>মোট রেফার</span></div>
+      <div class="stat"><b>${S.credits}</b><span>ফ্রি আনলক</span></div>
+    </div>
+    <div class="linkbox">${ICON.link}<span>${escp(UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন")}</span></div>
+    <button class="big" onclick="copyText(refLink())" ${UID ? "" : "disabled"}>${ICON.copy}কপি করুন</button>
+    <button class="big ghost" onclick="share()" ${UID ? "" : "disabled"}>${ICON.share}শেয়ার করুন</button>
+  </section>`;
+}
+
+/* ---------- লিংক ---------- */
+function linksView(){
+  return `<div class="sec">${ICON.link}লিংক</div>
+  <section class="card">
+    <div class="vtitle">আপনার রেফারেল লিংক</div>
+    <p class="muted">এই লিংকে কেউ জয়েন করলে আপনাকে বটে জানানো হবে এবং আপনি ১টি ফ্রি আনলক পাবেন।</p>
+    <div class="linkbox" style="margin-top:12px">${ICON.link}<span>${escp(UID ? refLink() : "লিংক পেতে Telegram থেকে আবার খুলুন")}</span></div>
+    <button class="big" onclick="copyText(refLink())" ${UID ? "" : "disabled"}>${ICON.copy}লিংক কপি করুন</button>
+    <button class="big ghost" onclick="share()" ${UID ? "" : "disabled"}>${ICON.share}শেয়ার করুন</button>
+  </section>`;
+}
+
+/* ---------- অ্যাডমিন ---------- */
+function adminView(){
+  const e = num("e");
+  const unit = e && e % 1440 === 0 ? 1440 : (e && e % 60 === 0 ? 60 : 1);
+  const val = e ? e / unit : 0;
+  return `<div class="sec">${ICON.shield}অ্যাডমিন প্যানেল</div>
+  <section class="card">
+    <div class="stats" style="margin-top:0">
+      <div class="stat"><b>${num("su")}</b><span>মোট ইউজার</span></div>
+      <div class="stat"><b>${num("st")}</b><span>মোট আনলক</span></div>
+      <div class="stat"><b>${num("v")}</b><span>ভিডিও</span></div>
+      <div class="stat"><b>${num("n") || 4}</b><span>অ্যাড সংখ্যা</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <label class="field">থাম্বনেইল (গ্যালারি থেকে বাছাই করুন)</label>
+    <label class="pick">
+      <span class="pv">${THUMB_SRC ? `<img src="${THUMB_SRC}" alt="">` : ICON.image}</span>
+      <span><b>ছবি বাছাই করুন</b><span class="muted" style="display:block">ছোট করে সেভ হবে</span></span>
+      <input type="file" accept="image/*" onchange="pickThumb(this.files[0])">
+    </label>
+
+    <label class="field">শিরোনাম</label>
+    <input class="input" id="f_t" value="${escp(P.get("t") || "")}">
+    <label class="field">নোটিশ (ইউজার মিনি অ্যাপে দেখবে)</label>
+    <textarea class="input" id="f_no">${escp(P.get("no") || "")}</textarea>
+    <label class="field">শেষ মেসেজ (ভিডিওর পর বটে যাবে)</label>
+    <textarea class="input" id="f_f">${escp(P.get("f") || "")}</textarea>
+    <label class="field">অ্যাড লিংক (প্রতি লাইনে একটি, https দিয়ে শুরু)</label>
+    <textarea class="input" id="f_a" style="min-height:110px">${escp(P.get("ads") || "")}</textarea>
+    <div class="two">
+      <div><label class="field">কয়টি অ্যাড</label><input class="input" id="f_n" type="number" min="1" value="${num("n") || 4}"></div>
+      <div><label class="field">অপেক্ষা (সেকেন্ড)</label><input class="input" id="f_w" type="number" min="1" value="${num("w") || 15}"></div>
+    </div>
+    <label class="field">ভিডিওর মেয়াদ (০ = সবসময়)</label>
+    <div class="two">
+      <input class="input" id="f_e" type="number" min="0" value="${val}">
+      <select class="input" id="f_u">
+        <option value="1" ${unit === 1 ? "selected" : ""}>মিনিট</option>
+        <option value="60" ${unit === 60 ? "selected" : ""}>ঘণ্টা</option>
+        <option value="1440" ${unit === 1440 ? "selected" : ""}>দিন</option>
+      </select>
+    </div>
+    <div class="tog"><span>ভিডিও চালু আছে</span><label class="sw"><input type="checkbox" id="f_en" ${P.get("en") === "0" ? "" : "checked"}><span></span></label></div>
+    <div class="tog"><span>ডাউনলোড ও স্ক্রিনশট সুরক্ষা</span><label class="sw"><input type="checkbox" id="f_pr" ${P.get("pr") === "0" ? "" : "checked"}><span></span></label></div>
+    <button class="big" onclick="saveAdmin()">${ICON.check}সেভ করুন</button>
+  </section>
+
+  <section class="card">
+    <div class="vtitle">ভিডিও ম্যানেজ</div>
+    <p class="muted">নতুন ভিডিও যোগ করতে বটে <b>/upload</b> লিখে ভিডিও পাঠান। বর্তমানে ${num("v")}টি ভিডিও আছে।</p>
+    <button class="big danger" onclick="tgSend({a:'admin_clearvideos'})">${ICON.trash}ভিডিও তালিকা খালি করুন</button>
+  </section>`;
+}
+function pickThumb(file){
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    let w = 120, q = 0.5, out = "";
+    for (let i = 0; i < 6; i++) {
+      const c = document.createElement("canvas");
+      c.width = w; c.height = Math.round(img.height * w / img.width);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      out = toCompact(c.toDataURL("image/jpeg", q));
+      if (out.length <= 2400) break;
+      w = Math.round(w * 0.8); q = Math.max(0.3, q - 0.05);
+    }
+    if (out.length > 2400) return toast("ছবিটি সেভ করা গেল না, অন্য ছবি বাছাই করুন");
+    tgSend({a: "admin_thumb", thumb: out});
+  };
+  img.src = URL.createObjectURL(file);
+}
+function saveAdmin(){
+  const mul = +document.getElementById("f_u").value || 1;
+  tgSend({
+    a: "admin_save",
+    title: document.getElementById("f_t").value,
+    notice: document.getElementById("f_no").value,
+    final: document.getElementById("f_f").value,
+    ads: document.getElementById("f_a").value,
+    need: +document.getElementById("f_n").value || 1,
+    wait: +document.getElementById("f_w").value || 15,
+    expire: (+document.getElementById("f_e").value || 0) * mul,
+    enabled: document.getElementById("f_en").checked,
+    protect: document.getElementById("f_pr").checked
+  });
+}
+
+nav();
+render();
+</script>
+</body>
+</html>
