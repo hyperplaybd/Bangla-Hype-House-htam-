@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Inboxo</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!--
+ CONFIG is in the script below. CFG.API empty = demo mode (works offline, data on this device only).
+ Server mode: POST JSON to CFG.API, every request carries initData (server must verify the Telegram hash).
+ Messages are end-to-end encrypted in the browser (ECDH P-256 + AES-GCM). Server stores only ciphertext {ct,iv}.
+ User actions : init{pub,name} sync search{q} start{user} send{to,ct,iv,reply} edit{to,id,ct,iv} del{to,id,both}
+                read{to,show} delchat{to} block{to} unblock{to} pay{method,trx} report{to,reason,evidence} problem{text}
+ Admin actions: admin_get admin_pay{id,decision} admin_methods{methods} admin_report{id,action} admin_problem{id}
+ Admin can read ONLY report evidence (last 20 messages the reporter chose to submit) - never other chats.
+-->
+<style>
+:root{--bg:#0e1621;--pan:#17212b;--pan2:#202b36;--acc:#6ab3f3;--acb:#2b7cd3;--out:#2b5278;--in:#182533;--tx:#f5f5f5;--mu:#708499;--ln:#0b121a;--gold:#f5b942;--red:#e5605b;--grn:#5fc36e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:Roboto,'Hind Siliguri',-apple-system,'Segoe UI',sans-serif;overflow:hidden}
+button,input,textarea{font:inherit;color:inherit}
+#app{position:fixed;inset:0;max-width:640px;margin:auto;overflow:hidden}
+.scr{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.over{transform:translateX(100%);z-index:5}.over.on{transform:none}
+#hd{height:56px;background:linear-gradient(180deg,#1d2b39,#17212b);box-shadow:0 1px 0 #ffffff0d;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 18px;font-size:20px;font-weight:500;flex:none}
+.pill{font-size:12px;font-weight:500;background:var(--pan2);color:var(--acc);padding:6px 11px;border-radius:14px;margin-right:6px}
+#body{flex:1;overflow-y:auto;padding-bottom:90px}.fade{animation:fd .25s}@keyframes fd{from{opacity:0;transform:translateY(6px)}}
+nav{position:absolute;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));background:#1d2935d9;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #ffffff14;border-radius:30px;display:flex;padding:6px;box-shadow:0 4px 18px #0008;z-index:3}
+nav button{flex:1;background:none;border:0;color:var(--tx);padding:7px 0 5px;border-radius:24px;font-size:11px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;transition:background .25s,color .25s}
+nav button.on{background:#2b3a4a;color:var(--acc)}nav button svg{transition:transform .25s}nav button.on svg{transform:scale(1.12)}
+.nb{position:absolute;top:2px;left:55%;background:var(--acb);color:#fff;border-radius:9px;font-size:10px;min-width:17px;line-height:17px;text-align:center;padding:0 4px}
+#fab{position:absolute;right:20px;bottom:calc(98px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4aa3f0,#2b6cc4);border:0;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px #2b6cc455,0 2px 8px #0009;z-index:3;transition:transform .2s}#fab:active{transform:scale(.9)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:500;flex:none}
+.row{display:flex;gap:12px;padding:9px 16px;align-items:center;cursor:pointer;user-select:none}.row:active{background:var(--pan2)}
+.row .m{flex:1;min-width:0;border-bottom:1px solid var(--ln);padding-bottom:9px;margin-bottom:-9px}
+.n{display:flex;justify-content:space-between;align-items:center;font-weight:500;font-size:16px}.n small{color:var(--mu);font-weight:400;font-size:12px}
+.l{display:flex;justify-content:space-between;color:var(--mu);font-size:15px;margin-top:3px;align-items:center}.l span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd{background:var(--acb);color:#fff;border-radius:11px;min-width:22px;padding:0 7px;font-size:12px;text-align:center;line-height:22px;margin-left:8px}
+.gold{color:var(--gold);vertical-align:-3px;margin-left:3px}.acc{color:var(--acc)}
+.empty{text-align:center;color:var(--mu);padding:70px 36px;line-height:1.6}.empty svg{opacity:.5;margin-bottom:10px}
+.sb{margin:12px 14px;display:flex;background:var(--pan);border-radius:22px;padding:0 16px;align-items:center;gap:8px;color:var(--mu)}.sb input{flex:1;background:none;border:0;outline:0;padding:13px 0}
+.card{margin:10px 12px;background:linear-gradient(180deg,#1a2531,#17212b);border:1px solid #ffffff0d;border-radius:16px;padding:14px}
+.btn{width:100%;border:0;border-radius:12px;background:linear-gradient(135deg,#3f95e8,#2b6cc4);color:#fff;font-weight:500;padding:13px;margin-top:12px;cursor:pointer;transition:transform .15s,opacity .2s}.btn:active{transform:scale(.97)}
+.btn.g{background:linear-gradient(90deg,#f5b942,#e8833a);color:#1a1205}.btn.r{background:var(--red)}.btn.s{background:var(--pan2);color:var(--acc)}.btn.sm{width:auto;padding:9px 16px;margin:0;font-size:14px}
+.meter{height:6px;background:var(--pan2);border-radius:3px;overflow:hidden;margin-top:10px}.meter i{display:block;height:100%;background:var(--acb);transition:width .6s}
+.hdc{display:flex;align-items:center;gap:8px;height:56px;background:var(--pan);padding:0 4px;flex:none}
+.hdc .t{flex:1;min-width:0;line-height:1.25}.hdc .t b{font-weight:500;font-size:16px}.hdc .t small{display:block;color:var(--mu);font-size:13px}.hdc .t small.ty{color:var(--acc)}
+.ib{background:none;border:0;color:#9fb0c1;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}.ib:active{background:var(--pan2)}
+#msgs{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:2px;background:radial-gradient(#ffffff0b 1px,transparent 1.6px) 0 0/24px 24px,radial-gradient(circle at 15% 0,#17304a,#0a131d 72%)}
+.ds{align-self:center;background:#0a111899;color:#c9d6e2;font-size:13px;padding:3px 11px;border-radius:12px;margin:8px 0;font-weight:500}
+.b{max-width:82%;padding:6px 10px 5px;border-radius:15px;font-size:16px;line-height:1.35;word-wrap:break-word;white-space:pre-wrap;animation:bi .22s both;cursor:pointer}.b:after{content:'';display:block;clear:both}
+@keyframes bi{from{opacity:0;transform:scale(.9) translateY(6px)}}
+.b.o{align-self:flex-end;background:linear-gradient(135deg,#3e84c7,#2a5c93);border-bottom-right-radius:5px}.b.i{align-self:flex-start;background:#1c2b3b;box-shadow:0 1px 1px #0005;border-bottom-left-radius:5px}
+.b time{float:right;margin:7px 0 -2px 10px;font-size:11.5px;color:#8fa6bd;display:flex;align-items:center;gap:3px;white-space:nowrap}.b.o time{color:#a9c7e6}
+.q{border-left:2px solid var(--acc);padding:1px 8px;margin:1px 0 4px;font-size:13.5px;color:#c4d3e2;background:#6ab3f31a;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.q b{display:block;color:var(--acc);font-weight:500}
+.typ{align-self:flex-start;background:var(--in);padding:11px 14px;border-radius:15px;display:flex;gap:4px}.typ i{width:7px;height:7px;border-radius:50%;background:var(--mu);animation:dt 1s infinite}.typ i:nth-child(2){animation-delay:.15s}.typ i:nth-child(3){animation-delay:.3s}
+@keyframes dt{50%{transform:translateY(-4px);opacity:.5}}
+#rp{display:none;background:var(--pan);padding:8px 8px 8px 16px;border-left:3px solid var(--acc);align-items:center;gap:8px;font-size:13.5px;color:var(--mu)}#rp div{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#rp b{display:block;color:var(--acc);font-weight:500}
+.cmp{display:flex;gap:8px;padding:8px;background:var(--pan);align-items:center;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+.cmp input{flex:1;background:none;border:0;outline:0;padding:11px 8px;font-size:16px}
+.snd{width:44px;height:44px;border-radius:50%;border:0;background:var(--pan2);color:var(--mu);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s,transform .15s}.snd.on{background:var(--acb);color:#fff}.snd:active{transform:scale(.88)}
+.sd{position:absolute;right:14px;bottom:76px;width:42px;height:42px;border-radius:50%;background:var(--pan);border:0;color:#9fb0c1;display:none;align-items:center;justify-content:center;box-shadow:0 2px 10px #0008;z-index:2}
+#bk{position:absolute;inset:0;background:#0009;opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}#bk.on{opacity:1;pointer-events:auto}
+#sh{position:absolute;left:0;right:0;bottom:0;background:var(--pan);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:21;max-height:90%;overflow-y:auto}#sh.on{transform:none}
+.gr{width:38px;height:4px;border-radius:2px;background:#3a4a5a;margin:0 auto 12px}
+.it{display:flex;gap:16px;align-items:center;padding:13px 6px;cursor:pointer;font-size:16px;border-radius:8px}.it:active{background:var(--pan2)}.it svg{color:#8fa0b2}.it.r,.it.r svg{color:var(--red)}
+.h2{font-size:19px;text-align:center;font-weight:500;margin:2px 0 4px}.sub{text-align:center;color:var(--mu);font-size:14px;margin-bottom:8px;line-height:1.5}
+.si{display:flex;gap:16px;align-items:center;padding:11px 16px;cursor:pointer}.si:active{background:var(--pan2)}.si .ti{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}.si div{flex:1}.si small{display:block;color:var(--mu);font-size:13px}
+.sec{color:var(--acc);font-size:14px;font-weight:500;padding:14px 16px 4px}
+.sw{width:42px;height:24px;border-radius:12px;background:#3a4a5a;position:relative;transition:background .25s;flex:none}.sw:after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .25s}.sw.on{background:var(--acb)}.sw.on:after{transform:translateX(18px)}
+.in2{width:100%;background:var(--bg);border:1px solid #2a3a4a;border-radius:10px;padding:12px;outline:0;margin-top:8px;resize:none}.in2:focus{border-color:var(--acb)}
+.tag{font-size:11.5px;padding:3px 9px;border-radius:10px;font-weight:500}.tag.p{background:#f5b94226;color:var(--gold)}.tag.a{background:#5fc36e26;color:var(--grn)}.tag.x{background:#e5605b26;color:var(--red)}
+.ft{display:flex;gap:12px;padding:8px 0;font-size:15px;align-items:flex-start}.ft svg{color:var(--acc);flex:none}
+.ad{display:flex;background:var(--pan);overflow-x:auto;flex:none}.ad button{flex:1;background:none;border:0;border-bottom:2px solid transparent;color:var(--mu);padding:13px 12px;font-weight:500;font-size:14px;white-space:nowrap}.ad button.on{color:var(--acc);border-color:var(--acc)}
+.rw{display:flex;justify-content:space-between;align-items:center;gap:8px}.mu{color:var(--mu);font-size:13px;margin-top:4px}.acts{display:flex;gap:8px;margin-top:12px}.acts .btn{flex:1}
+.ev{background:var(--bg);border-radius:10px;padding:8px;max-height:240px;overflow-y:auto;margin:8px 0}.ev p{font-size:14px;padding:4px 6px;border-radius:6px;margin:2px 0}.ev p b{display:block;font-size:12px;color:var(--acc);font-weight:500}.ev p.rp b{color:var(--red)}
+#toast{position:absolute;top:70px;left:50%;transform:translate(-50%,-30px);background:#000d;padding:10px 18px;border-radius:20px;opacity:0;transition:.3s;z-index:40;font-size:14px;pointer-events:none;max-width:90%;text-align:center}#toast.on{opacity:1;transform:translate(-50%,0)}
+#ban{position:absolute;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:10px}
+.badge{vertical-align:-3px;margin-left:4px;flex:none}.pr{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(90deg,#6c8dff22,#ec5fa822);color:#c9b8ff}
+.hero{text-align:center;padding:28px 16px 6px}.glow{display:inline-flex;filter:drop-shadow(0 0 22px #9b5cf699);animation:fl 3.2s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-6px)}}
+.hero .h2{background:linear-gradient(90deg,#8aa4ff,#c58bff,#ff8cc0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ti2{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#6c8dff,#ec5fa8);display:flex;align-items:center;justify-content:center;color:#fff!important;flex:none}.ti2 svg{color:#fff!important}.pf{align-items:center;gap:14px;padding:12px 0}
+.stt{margin:12px;padding:14px;border-radius:14px;text-align:center;font-weight:500}.stt.a{background:#5fc36e1f;color:var(--grn)}.stt.p{background:#f5b9421f;color:var(--gold)}
+.pm{display:flex;gap:12px;align-items:flex-start;cursor:pointer;margin:8px 0}.pm input{margin-top:5px;accent-color:#2b7cd3}.pm:has(input:checked){border-color:var(--acb);background:#1d3047}.addr{font-size:17px;margin:6px 0;word-break:break-all;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:6px 14px 12px}.chip{background:var(--pan2);border:0;border-radius:16px;padding:8px 14px;color:var(--acc);font-size:14px}.chip:active{transform:scale(.95)}
+</style></head><body><div id="app"><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b9dff"/><stop offset=".55" stop-color="#a063f5"/><stop offset="1" stop-color="#f0609f"/></linearGradient></defs></svg>
+<div id="main" class="scr"><div id="hd"></div><div id="body"></div><button id="fab" onclick="tabTo('find')"></button><nav id="nav"></nav></div>
+<div id="chat" class="scr over"><div class="hdc"><button class="ib" onclick="closeChat()" id="cb"></button><div id="ca"></div><div class="t" id="ct"></div><button class="ib" onclick="chatMenu()" id="cm"></button></div>
+<div id="msgs"></div><button class="sd" id="sd" onclick="toBottom()"></button><div id="rp"><div id="rpt"></div><button class="ib" onclick="cancelBar()" id="rpx"></button></div>
+<div class="cmp"><input id="inp" placeholder="Message" autocomplete="off" oninput="$('#sn').classList.toggle('on',this.value.trim().length>0)"><button class="snd" id="sn" onclick="send()"></button></div></div>
+<div id="adm" class="scr over"></div>
+<div id="ban"></div><div id="bk" onclick="closeSheet()"></div><div id="sh"></div><div id="toast"></div></div>
+<script>
+const CFG={API:'',ADMIN_IDS:['YOUR_TELEGRAM_ID'],FREE:6,PRICE:20,DEMO_ADMIN:true};
+const TG=window.Telegram&&Telegram.WebApp,TGU=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
+if(TG){TG.ready();TG.expand();try{TG.setHeaderColor('#17212b');TG.setBackgroundColor('#0e1621')}catch(e){}}
+window.onerror=(m,s,l)=>{document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;z-index:99;bottom:0;left:0;right:0;background:#400;color:#fff;font-size:11px;padding:8px;white-space:pre-wrap">Error: '+m+' (line '+l+')</pre>')};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P={back:'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z',search:'M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',more:'M12 8a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z',send:'M2 21l21-9L2 3v7l15 2-15 2z',chat:'M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z',star:'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',set:'M3 17v2h6v-2zM3 5v2h10V5zm10 16v-2h8v-2h-8v-2h-2v6zM7 9v2H3v2h4v2h2V9zm14 4v-2H11v2zm-6-4h2V7h4V5h-4V3h-2z',check:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',close:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',lock:'M18 8h-1V6a5 5 0 00-10 0v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2zM9 6a3 3 0 016 0v2H9z',copy:'M16 1H4a2 2 0 00-2 2v14h2V3h12zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11z',reply:'M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z',edit:'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75z',trash:'M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z',flag:'M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z',block:'M12 2a10 10 0 100 20 10 10 0 000-20zM4 12a8 8 0 018-8c1.85 0 3.55.63 4.9 1.69L5.69 16.9A7.9 7.9 0 014 12zm8 8a8 8 0 01-4.9-1.69L18.31 7.1A7.9 7.9 0 0120 12a8 8 0 01-8 8z',down:'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z',shield:'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5z',warn:'M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z',user:'M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',pen:'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75z',info:'M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2zm0-8h-2V7h2z',card:'M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 14H4v-6h16zm0-10H4V6h16z'};
+const ic=(n,s=24)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor"><path d="${P[n]}"/></svg>`;
+const tick=d=>d?`<svg width="19" height="14" viewBox="0 0 30 24" fill="#6ab3f3"><path d="${P.check}"/><path d="${P.check}" transform="translate(7 0)"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="#a9c7e6"><path d="${P.check}"/></svg>`;
+const pts=(n,a,b)=>Array.from({length:n},(_,i)=>{const r=i%2?b:a,t=i*2*Math.PI/n;return(12+r*Math.sin(t)).toFixed(2)+','+(12-r*Math.cos(t)).toFixed(2)}).join(' ');
+const SEAL=pts(24,11,9.3),STAR=pts(10,5.9,2.5);
+const badge=(s=18)=>`<svg class="badge" width="${s}" height="${s}" viewBox="0 0 24 24"><polygon points="${SEAL}" fill="url(#pg)" stroke="url(#pg)" stroke-width="1.6" stroke-linejoin="round"/><polygon points="${STAR}" fill="#fff"/></svg>`;
+const G=[['#ff885e','#ff516a'],['#ffcd6a','#ffa85c'],['#82b1ff','#665fff'],['#a0de7e','#54cb68'],['#53edd6','#28c9b7'],['#72d5fd','#2a9ef1'],['#e0a2f3','#d669ed']];
+const gr=id=>G[[...String(id)].reduce((a,c)=>a+c.charCodeAt(0),0)%7];
+const av=(u,s=54)=>{const g=gr(u.id);return `<div class="av" style="width:${s}px;height:${s}px;background:linear-gradient(${g[0]},${g[1]});font-size:${s*.42}px">${esc((u.name||'?').trim()[0]||'?').toUpperCase()}</div>`};
+const tm=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const dl=t=>{const d=new Date(t),n=new Date();return d.toDateString()===n.toDateString()?'Today':d.toDateString()===new Date(n-864e5).toDateString()?'Yesterday':d.toLocaleDateString([],{day:'numeric',month:'long'})};
+const rl=t=>new Date(t).toDateString()===new Date().toDateString()?tm(t):new Date(t).toLocaleDateString([],{day:'numeric',month:'short'});
+const today=()=>new Date().toISOString().slice(0,10);
+const CR=!!(window.crypto&&crypto.subtle),E8=new TextEncoder(),D8=new TextDecoder(),KEY='inboxo_v2';
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))),ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let S={me:null,chats:{},used:0,day:today(),prem:false,pend:false,set:{rr:true},methods:[{id:1,name:'bKash',number:'01XXXXXXXXX',price:'20 BDT',note:'1. Open bKash and choose Send Money.\n2. Send the exact amount to the number above.\n3. Copy the Transaction ID and paste it below.'},{id:2,name:'Nagad',number:'01XXXXXXXXX',price:'20 BDT',note:'1. Open Nagad and choose Send Money.\n2. Send the exact amount to the number above.\n3. Copy the Transaction ID and paste it below.'},{id:3,name:'USDT (TRC20)',number:'T_YOUR_WALLET_ADDRESS',price:'0.20 USDT',note:'1. Send the exact amount on the TRC20 network only.\n2. Other networks will lose your funds.\n3. Paste the transaction hash (TxID) below.'}],blocked:[],peers:{},adm:{pay:[],rep:[],prob:[]},banned:false,warn:''};
+let cur=null,tab='chats',replyTo=null,editing=null,selMsg=null,K=null,AD={pay:[],rep:[],prob:[],methods:[]},atab='pay',lp=0,noClick=0,st=0;
+const PT={},KC={};
+const fm=id=>S.chats[cur].msgs.find(m=>String(m.id)===String(id));
+const isAdmin=()=>!!(S.me&&(S.me.admin||CFG.ADMIN_IDS.includes(String(S.me.id))||(!TGU&&!CFG.API&&CFG.DEMO_ADMIN)));
+const mine=m=>String(m.from)===String(S.me.id);
+function save(){if(CFG.API)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)}
+function buzz(){try{TG&&TG.HapticFeedback.impactOccurred('light')}catch(e){}}
+
+/* ---- encryption (runs in the browser; server never sees plain text) ---- */
+async function genKeys(){const k=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);return{pub:await crypto.subtle.exportKey('jwk',k.publicKey),prv:await crypto.subtle.exportKey('jwk',k.privateKey)}}
+async function aes(prv,pub){const a=await crypto.subtle.importKey('jwk',prv,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']),b=await crypto.subtle.importKey('jwk',pub,{name:'ECDH',namedCurve:'P-256'},false,[]);return crypto.subtle.deriveKey({name:'ECDH',public:b},a,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function keyFor(u){if(!CR||!K||!u.pub)return null;return KC[u.id]||(KC[u.id]=await aes(K.prv,u.pub))}
+async function encR(t,k){if(!k)return{ct:b64(E8.encode(t)),iv:''};const iv=crypto.getRandomValues(new Uint8Array(12));return{ct:b64(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,E8.encode(t))),iv:b64(iv)}}
+async function decR(m,k){if(!k||!m.iv)return D8.decode(ub(m.ct));return D8.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(m.iv)},k,ub(m.ct)))}
+async function hydrate(){for(const id in S.chats){const c=S.chats[id];for(const m of c.msgs){if(PT[m.id]===undefined){try{PT[m.id]=await decR(m,await keyFor(c.user))}catch(e){PT[m.id]='This message could not be decrypted'}}}}}
+
+/* ---- API (demo server lives inside local()) ---- */
+async function api(a,d){
+ if(CFG.API){try{const r=await fetch(CFG.API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:a,initData:TG?TG.initData:'',...(d||{})})});return await r.json()}catch(e){return{error:'net'}}}
+ return local(a,d||{});
+}
+async function local(a,d){
+ if(S.day!==today()){S.day=today();S.used=0}
+ const A=S.adm,id=()=>Date.now()+Math.floor(Math.random()*999);
+ if(a==='search'){const q=d.q.toLowerCase();if(q.length<3)return{error:'nf'};let p=S.peers[q];if(!p&&CR)p=S.peers[q]=await genKeys();return{user:{id:'u_'+q,name:d.q,username:q,pub:p&&p.pub}}}
+ if(a==='start'){if(S.blocked.some(b=>b.id===d.user.id))return{error:'blocked'};if(!S.prem&&S.used>=CFG.FREE)return{error:'limit'};S.used++;S.chats[d.user.id]={user:d.user,msgs:[],unread:0};save();return{ok:1}}
+ if(a==='send'){demoReply(d.to);return{ok:1}}
+ if(a==='pay'){A.pay.push({id:id(),user:S.me,method:d.method,trx:d.trx,price:d.price,t:Date.now(),status:'pending'});S.pend=true;save();return{ok:1}}
+ if(a==='report'){A.rep.push({id:id(),by:S.me,against:S.chats[d.to].user,reason:d.reason,evidence:d.evidence,t:Date.now(),status:'open'});save();return{ok:1}}
+ if(a==='problem'){A.prob.push({id:id(),user:S.me,text:d.text,t:Date.now(),status:'open'});save();return{ok:1}}
+ if(a==='admin_get')return{pay:A.pay,rep:A.rep,prob:A.prob,methods:S.methods};
+ if(a==='admin_pay'){const p=A.pay.find(x=>x.id===d.id);p.status=d.decision;if(d.decision==='approved')S.prem=true;S.pend=A.pay.some(x=>x.status==='pending');save();return{ok:1}}
+ if(a==='admin_methods'){S.methods=d.methods;save();return{ok:1}}
+ if(a==='admin_report'){A.rep.find(x=>x.id===d.id).status=d.action;save();return{ok:1}}
+ if(a==='admin_problem'){A.prob.find(x=>x.id===d.id).status='resolved';save();return{ok:1}}
+ save();return{ok:1};
+}
+function demoReply(pid){const c=S.chats[pid],R=['Assalamu alaikum','Yes, tell me','Alright, thank you','That sounds like a good plan','Let me get back to you shortly'];
+ setTimeout(()=>{c.msgs.forEach(m=>{if(mine(m))m.seen=1});render()},900);
+ setTimeout(()=>{c.typing=1;render()},1300);
+ setTimeout(async()=>{if(S.chats[pid]!==c)return;c.typing=0;const t=R[Math.random()*R.length|0],k=CR&&S.peers[c.user.username]?await aes(S.peers[c.user.username].prv,K.pub):null,e=await encR(t,k),m={id:Date.now(),from:pid,ct:e.ct,iv:e.iv,t:Date.now()};PT[m.id]=t;c.msgs.push(m);if(cur!==pid)c.unread=(c.unread||0)+1;save();render()},2900)}
+async function sync(){if(CFG.API){const r=await api('sync');if(r&&r.me){const own=S.set;Object.assign(S,r);S.set=r.set||own}}await hydrate();render()}
+
+/* ---- main UI ---- */
+function render(){
+ if(!S.me)return;
+ $('#ban').style.display=S.banned?'flex':'none';
+ if(S.banned)$('#ban').innerHTML=`<div style="color:var(--red)">${ic('block',64)}</div><div class="h2">Account restricted</div><div class="sub">Your account was suspended by the administrator for violating the rules.</div>`;
+ const un=Object.values(S.chats).reduce((a,c)=>a+(c.unread||0),0),left=S.prem?'':`<span class="pill">${Math.max(0,CFG.FREE-S.used)} new chats left</span>`;
+ $('#hd').innerHTML=`<span>${{chats:'Inboxo',find:'Find people',prem:'Premium',set:'Settings'}[tab]}</span><div style="display:flex;align-items:center">${S.prem?'<span class="pill pr">'+badge(15)+'Premium</span>':(tab==='chats'||tab==='find'?left:'')}${tab==='chats'?`<button class="ib" onclick="tabTo('find')">${ic('search')}</button>`:''}</div>`;
+ $('#nav').innerHTML=[['chats','chat','Chats'],['find','search','Find'],['prem','star','Premium'],['set','set','Settings']].map(t=>`<button class="${tab===t[0]?'on':''}" onclick="tabTo('${t[0]}')">${ic(t[1])}${t[2]}${t[0]==='chats'&&un?`<b class="nb">${un}</b>`:''}</button>`).join('');
+ $('#fab').style.display=tab==='chats'?'flex':'none';$('#fab').innerHTML=ic('pen');
+ if(!(tab==='find'&&$('#q')))({chats:vChats,find:vFind,prem:vPrem,set:vSet})[tab]();
+ if(cur)drawChat();
+}
+function tabTo(t){tab=t;closeSheet();render();const b=$('#body');b.classList.remove('fade');void b.offsetWidth;b.classList.add('fade')}
+function vChats(){
+ const l=Object.values(S.chats).sort((a,b)=>lt(b)-lt(a));
+ $('#body').innerHTML=(S.warn?`<div class="card" style="border-left:3px solid var(--gold)"><div class="rw"><b>Notice from admin</b><button class="ib" style="width:32px;height:32px" onclick="S.warn='';save();render()">${ic('close',18)}</button></div><div class="mu">${esc(S.warn)}</div></div>`:'')+
+ (l.length?l.map(c=>{const m=c.msgs[c.msgs.length-1];
+  return `<div class="row" onclick="openChat('${esc(c.user.id)}')" oncontextmenu="rowMenu('${esc(c.user.id)}');return false" ontouchstart="lp=setTimeout(()=>rowMenu('${esc(c.user.id)}'),520)" ontouchend="clearTimeout(lp)" ontouchmove="clearTimeout(lp)">${av(c.user)}<div class="m"><div class="n"><span>${esc(c.user.name)}${c.user.prem?badge(15):''}</span><small>${m?rl(m.t):''}</small></div><div class="l"><span>${c.typing?'<span class="acc">typing...</span>':m?(mine(m)?'You: ':'')+esc(PT[m.id]):'No messages yet'}</span>${c.unread?`<b class="bd">${c.unread}</b>`:''}</div></div></div>`}).join(''):
+ `<div class="empty">${ic('chat',72)}<br>No chats yet.<br>Open the Find tab and enter any Telegram username to start a conversation.</div>`);
+}
+const lt=c=>c.msgs.length?c.msgs[c.msgs.length-1].t:0;
+function rowMenu(id){noClick=1;setTimeout(()=>noClick=0,500);buzz();sheet(`<div class="gr"></div><div class="it" onclick="ask('Clear history','All messages in this chat will be removed from your device.','Clear',()=>clearChat('${id}'))">${ic('trash')}Clear history</div><div class="it r" onclick="ask('Delete chat','This chat will be removed from your list.','Delete',()=>delChat('${id}'))">${ic('trash')}Delete chat</div>`)}
+function clearChat(id){S.chats[id].msgs=[];api('clear',{to:id});save();render()}
+function delChat(id){delete S.chats[id];api('delchat',{to:id});if(cur===id)closeChat();save();render()}
+function vFind(){
+ if($('#q'))return;
+ $('#body').innerHTML=`<div class="sb">${ic('search',20)}<span>@</span><input id="q" style="margin-left:-6px" placeholder="Telegram username" autocapitalize="off" autocomplete="off" oninput="doSearch(this.value)"></div>
+ <div class="card"><div class="rw"><span>${S.prem?'Unlimited new chats':'New chats today'}</span><b>${S.prem?'Premium':S.used+' / '+CFG.FREE}</b></div>${S.prem?'':`<div class="meter"><i style="width:${Math.min(100,S.used/CFG.FREE*100)}%"></i></div>`}</div><div id="res"></div>`;
+}
+function doSearch(v){clearTimeout(st);v=v.replace('@','').trim();const r=$('#res');if(!v){r.innerHTML='';return}
+ st=setTimeout(async()=>{const x=await api('search',{q:v});
+  if(!x.user){r.innerHTML='<div class="empty" style="padding:30px">No user found with this username.</div>';return}
+  const u=x.user;r.innerHTML=`<div class="card" style="display:flex;gap:14px;align-items:center">${av(u,56)}<div style="flex:1"><b>${esc(u.name)}${u.prem?badge(16):''}</b><div class="mu">@${esc(u.username)}</div></div></div><div style="padding:0 12px"><button class="btn" id="go">${S.chats[u.id]?'Open chat':'Start chat'}</button></div>`;
+  $('#go').onclick=()=>openChat(u.id,u)},350)}
+function vPrem(){
+ const F=[['lock','Unlimited new chats','Start as many conversations as you want, every day'],['check','Hide read receipts','Read messages without others knowing'],['star','Premium badge','A gradient badge next to your name for everyone to see'],['shield','Priority support','Your reports and problems are reviewed first']];
+ $('#body').innerHTML=`<div class="hero"><div class="glow">${badge(84)}</div><div class="h2" style="font-size:25px;margin-top:14px">Inboxo Premium</div><div class="sub">Everything unlocked for ${CFG.PRICE} BDT per month</div></div>
+ <div class="card" style="padding:4px 14px">${F.map(f=>`<div class="ft pf"><div class="ti2">${ic(f[0],20)}</div><div><b style="font-weight:500">${f[1]}</b><div class="mu" style="margin:0">${f[2]}</div></div></div>`).join('')}</div>
+ ${S.prem?`<div class="stt a">Premium is active on your account</div>`:S.pend?`<div class="stt p">Your payment is being reviewed by the admin</div>`:`<div style="padding:0 12px"><button class="btn g" onclick="payUI()">Get Premium for ${CFG.PRICE} BDT</button></div>`}`;
+}
+function cp(t){try{navigator.clipboard.writeText(t);toast('Copied')}catch(e){toast('Copy not supported')}}
+function payUI(){sheet(`<div class="gr"></div><div class="h2">Get Premium</div><div class="sub">Choose a payment method, follow its steps, then enter the transaction ID.</div>
+ ${S.methods.map((m,i)=>`<label class="card pm"><input type="radio" name="pmx" value="${i}" ${i?'':'checked'}><div style="flex:1;min-width:0"><div class="rw"><b>${esc(m.name)}</b><span class="tag p">${esc(m.price||CFG.PRICE+' BDT')}</span></div><div class="addr">${esc(m.number)}</div>${m.note?`<div class="mu" style="white-space:pre-wrap">${esc(m.note)}</div>`:''}<button class="btn s sm" style="margin-top:10px" data-c="${esc(m.number)}" onclick="event.preventDefault();cp(this.dataset.c)">Copy</button></div></label>`).join('')}
+ <input class="in2" id="trx" placeholder="Transaction ID / TxID"><button class="btn g" onclick="pay()">Submit payment</button>`)}
+async function pay(){const r=document.querySelector('input[name=pmx]:checked'),t=$('#trx').value.trim();if(!r)return toast('Select a payment method');if(t.length<6)return toast('Enter a valid Transaction ID');const m=S.methods[r.value];await api('pay',{method:m.name,price:m.price||CFG.PRICE+' BDT',trx:t});S.pend=true;closeSheet();toast('Submitted. The admin will review it soon.');render()}
+function vSet(){const m=S.me,T=(c,i,t,s,f)=>`<div class="si" onclick="${f}"><div class="ti" style="background:${c}">${ic(i,20)}</div><div>${t}${s?`<small>${s}</small>`:''}</div></div>`;
+ $('#body').innerHTML=`<div style="display:flex;gap:14px;align-items:center;padding:18px 16px">${av(m,66)}<div><b style="font-size:19px">${esc(m.name)}</b>${S.prem?badge(21):''}<div class="mu">@${esc(m.username)}</div><div class="mu" style="font-size:12px">ID ${esc(m.id)}</div></div></div>
+ <div class="sec">Privacy and security</div>
+ <div class="si" onclick="tgRR()"><div class="ti" style="background:#4cae4f">${ic('check',20)}</div><div>Show read receipts<small>${S.prem?'Others see when you read their messages':'Turning this off needs Premium'}</small></div><span class="sw ${S.set.rr?'on':''}"></span></div>
+ ${T('#2f8fe0','lock','End-to-end encryption',CR?'Active. Only you and the receiver can read your chats':'Unavailable here. Open the app over HTTPS','')}
+ ${T('#e5605b','block','Blocked users',S.blocked.length+' blocked','blockedUI()')}
+ <div class="sec">Support</div>${T('#e8833a','flag','Report a problem','Tell the admin about any issue','problemUI()')}
+ ${isAdmin()?`<div class="sec">Administration</div>${T('#8a63d2','shield','Admin panel','Payments, numbers and reports','openAdmin()')}`:''}
+ <div class="mu" style="text-align:center;padding:24px">Inboxo 1.0</div>`}
+function tgRR(){if(!S.prem){toast('Hiding read receipts needs Premium');return tabTo('prem')}S.set.rr=!S.set.rr;api('read',{to:null,show:S.set.rr});save();render()}
+function blockedUI(){sheet(`<div class="gr"></div><div class="h2">Blocked users</div>${S.blocked.length?S.blocked.map(b=>`<div class="rw" style="padding:8px 0"><span>${esc(b.name)}</span><button class="btn s sm" onclick="unblock('${esc(b.id)}')">Unblock</button></div>`).join(''):'<div class="sub">You have not blocked anyone.</div>'}`)}
+function unblock(id){S.blocked=S.blocked.filter(b=>b.id!==id);api('unblock',{to:id});save();closeSheet();toast('User unblocked')}
+function problemUI(){sheet(`<div class="gr"></div><div class="h2">Report a problem</div><div class="sub">Describe what went wrong. Only your message is sent to the admin.</div><textarea class="in2" id="pt" rows="4" placeholder="What happened?"></textarea><button class="btn" onclick="sendProblem()">Send</button>`)}
+async function sendProblem(){const t=$('#pt').value.trim();if(t.length<5)return toast('Please describe the problem');await api('problem',{text:t});closeSheet();toast('Report sent to the admin')}
+
+/* ---- chat ---- */
+async function openChat(id,u){
+ if(noClick)return;
+ if(!S.chats[id]){const r=await api('start',{user:u});
+  if(r.error==='limit'){buzz();return limitUI()}if(r.error==='blocked')return toast('Unblock this user first in Settings');if(r.error)return toast('Something went wrong. Try again.');
+  if(CFG.API)await sync()}
+ cur=id;S.chats[id].unread=0;api('read',{to:id,show:S.set.rr});$('#chat').classList.add('on');$('#msgs').dataset.s='';drawChat(true);render();setTimeout(()=>{if(innerWidth>700)$('#inp').focus()},350)}
+function closeChat(){cur=null;cancelBar();$('#chat').classList.remove('on');render()}
+function drawChat(f){const c=S.chats[cur];if(!c)return;const box=$('#msgs'),near=f||box.scrollHeight-box.scrollTop-box.clientHeight<140;
+ $('#ca').innerHTML=av(c.user,40);$('#ct').innerHTML=`<b>${esc(c.user.name)}${c.user.prem?badge(16):''}</b><small class="${c.typing?'ty':''}">${c.typing?'typing...':'@'+esc(c.user.username)}</small>`;
+ const sig=cur+c.msgs.map(m=>m.id+(m.ed?'e':'')+(m.seen?'s':'')+(PT[m.id]!==undefined?'1':'0')).join()+(c.typing||'')+S.set.rr;if(box.dataset.s===sig)return;box.dataset.s=sig;
+ let last='';box.innerHTML=(c.msgs.length?'':`<div class="empty" style="margin:auto;padding:20px">${ic('lock',40)}<br>Messages here are end-to-end encrypted.<br>Say hello to start the conversation.</div>`)+c.msgs.map(m=>{
+  const own=mine(m),q=m.reply&&c.msgs.find(x=>String(x.id)===String(m.reply)),d=dl(m.t),sep=d!==last?`<div class="ds">${d}</div>`:'';last=d;
+  return sep+`<div class="b ${own?'o':'i'}" onclick="msgMenu('${m.id}')">${q?`<div class="q"><b>${mine(q)?'You':esc(c.user.name)}</b>${esc(PT[q.id])}</div>`:''}${esc(PT[m.id])}<time>${m.ed?'edited ':''}${tm(m.t)}${own?tick(m.seen&&S.set.rr):''}</time></div>`}).join('')+(c.typing?'<div class="typ"><i></i><i></i><i></i></div>':'');
+ if(near)box.scrollTop=box.scrollHeight}
+function toBottom(){const b=$('#msgs');b.scrollTo({top:b.scrollHeight,behavior:'smooth'})}
+function bar(l,t){const r=$('#rp');r.style.display='flex';$('#rpt').innerHTML=`<b>${l}</b>${esc(t)}`}
+function cancelBar(){if(editing){$('#inp').value='';$('#sn').classList.remove('on')}editing=null;replyTo=null;$('#rp').style.display='none'}
+async function send(){const i=$('#inp'),t=i.value.trim();if(!t||!cur)return;const to=cur,c=S.chats[to];i.value='';$('#sn').classList.remove('on');buzz();
+ const e=await encR(t,await keyFor(c.user));
+ if(editing){const m=fm(editing);m.ct=e.ct;m.iv=e.iv;m.ed=1;PT[m.id]=t;api('edit',{to,id:m.id,ct:e.ct,iv:e.iv});editing=null;cancelBar();save();render();return}
+ const m={id:Date.now(),from:S.me.id,ct:e.ct,iv:e.iv,t:Date.now(),reply:replyTo};PT[m.id]=t;c.msgs.push(m);cancelBar();save();render();drawChat(true);
+ await api('send',{to,ct:e.ct,iv:e.iv,reply:m.reply});if(CFG.API)sync()}
+function msgMenu(id){selMsg=id;const m=fm(id),own=mine(m);
+ sheet(`<div class="gr"></div><div class="it" onclick="setReply()">${ic('reply')}Reply</div><div class="it" onclick="copyMsg()">${ic('copy')}Copy text</div>${own?`<div class="it" onclick="startEdit()">${ic('edit')}Edit</div>`:''}<div class="it r" onclick="delUI()">${ic('trash')}Delete</div>`)}
+function setReply(){closeSheet();cancelBar();replyTo=selMsg;const m=fm(selMsg);bar('Reply to '+(mine(m)?'yourself':S.chats[cur].user.name),PT[m.id]);$('#inp').focus()}
+function startEdit(){closeSheet();cancelBar();const m=fm(selMsg);editing=m.id;bar('Edit message',PT[m.id]);const i=$('#inp');i.value=PT[m.id];$('#sn').classList.add('on');i.focus()}
+function copyMsg(){closeSheet();try{navigator.clipboard.writeText(PT[fm(selMsg).id]);toast('Text copied')}catch(e){toast('Copy not supported')}}
+function delUI(){const own=mine(fm(selMsg));sheet(`<div class="gr"></div><div class="h2">Delete message</div><div class="sub">${own?'Choose who should lose this message.':'This removes the message from your device.'}</div><button class="btn r" onclick="delMsg(0)">Delete for me</button>${own?`<button class="btn r" onclick="delMsg(1)">Delete for everyone</button>`:''}<button class="btn s" onclick="closeSheet()">Cancel</button>`)}
+function delMsg(both){closeSheet();const c=S.chats[cur];c.msgs=c.msgs.filter(m=>String(m.id)!==String(selMsg));api('del',{to:cur,id:selMsg,both});save();render()}
+function chatMenu(){sheet(`<div class="gr"></div><div class="it" onclick="ask('Clear history','All messages will be removed from your device.','Clear',()=>{clearChat(cur)})">${ic('trash')}Clear history</div><div class="it" onclick="reportUI()">${ic('flag')}Report user</div><div class="it r" onclick="ask('Block user','They will not be able to message you. Their chat is deleted from your list.','Block',blockU)">${ic('block')}Block user</div><div class="it r" onclick="ask('Delete chat','This chat will be removed from your list.','Delete',()=>delChat(cur))">${ic('trash')}Delete chat</div>`)}
+function blockU(){const u=S.chats[cur].user;S.blocked.push({id:u.id,name:u.name});api('block',{to:u.id});delChat(u.id);toast('User blocked')}
+function reportUI(){const R=['Spam','Abuse or harassment','Scam or fraud','Inappropriate content','Something else'];
+ sheet(`<div class="gr"></div><div class="h2">Report user</div><div class="sub">The last 20 messages of this chat will be shared with the admin for review. Nothing else is shared.</div>${R.map((r,i)=>`<label class="it"><input type="radio" name="rr" value="${r}" ${i?'':'checked'}>${r}</label>`).join('')}<button class="btn r" onclick="sendReport()">Send report</button>`)}
+async function sendReport(){const c=S.chats[cur],r=document.querySelector('input[name=rr]:checked').value,ev=c.msgs.slice(-20).map(m=>({who:mine(m)?'reporter':'reported',text:PT[m.id],t:m.t}));
+ await api('report',{to:cur,reason:r,evidence:ev});closeSheet();toast('Report sent. Thank you.')}
+function limitUI(){sheet(`<div class="gr"></div><div class="h2">Daily limit reached</div><div class="sub">Free accounts can start ${CFG.FREE} new chats per day.<br>Get Premium for ${CFG.PRICE} BDT to remove the limit.</div><button class="btn g" onclick="closeSheet();closeChat();tabTo('prem')">View Premium</button>`)}
+function ask(t,s,l,fn){window._f=fn;sheet(`<div class="gr"></div><div class="h2">${t}</div><div class="sub">${s}</div><button class="btn r" onclick="closeSheet();_f()">${l}</button><button class="btn s" onclick="closeSheet()">Cancel</button>`)}
+function sheet(h){$('#sh').innerHTML=h;$('#sh').classList.add('on');$('#bk').classList.add('on')}
+function closeSheet(){$('#sh').classList.remove('on');$('#bk').classList.remove('on')}
+
+/* ---- admin panel ---- */
+async function openAdmin(){$('#adm').classList.add('on');await loadAdm();drawAdm()}
+async function loadAdm(){const r=await api('admin_get');if(r&&!r.error)AD=r}
+function drawAdm(){
+ const pc=AD.pay.filter(x=>x.status==='pending').length,rc=AD.rep.filter(x=>x.status==='open').length,bc=AD.prob.filter(x=>x.status==='open').length,n=(l,c)=>l+(c?` (${c})`:'');
+ const U=u=>`${esc(u.name)} <span class="mu">@${esc(u.username)}</span>`,ST=s=>`<span class="tag ${s==='pending'||s==='open'?'p':s==='approved'||s==='resolved'||s==='dismissed'?'a':'x'}">${s}</span>`,TM=t=>new Date(t).toLocaleString([],{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+ let h='';
+ if(atab==='pay')h=AD.pay.length?[...AD.pay].reverse().map(p=>`<div class="card"><div class="rw"><b>${U(p.user)}</b>${ST(p.status)}</div><div class="mu">${esc(p.method)}  |  TrxID ${esc(p.trx)}  |  ${esc(p.price||CFG.PRICE+' BDT')}</div><div class="mu">${TM(p.t)}</div>${p.status==='pending'?`<div class="acts"><button class="btn r sm" onclick="decide(${p.id},'rejected')">Reject</button><button class="btn sm" onclick="decide(${p.id},'approved')">Approve</button></div>`:''}</div>`).join(''):'<div class="empty">No payment requests yet.</div>';
+ if(atab==='num')h=`<div class="sec">Payment methods shown to users</div>${AD.methods.map((m,i)=>`<div class="card"><input class="in2" style="margin:0 0 8px" data-i="${i}" data-f="name" value="${esc(m.name)}" placeholder="Method name (bKash, Nagad, USDT)"><input class="in2" style="margin:0 0 8px" data-i="${i}" data-f="number" value="${esc(m.number)}" placeholder="Number or wallet address"><input class="in2" style="margin:0 0 8px" data-i="${i}" data-f="price" value="${esc(m.price||'')}" placeholder="Amount (20 BDT, 0.20 USDT)"><textarea class="in2" style="margin:0" rows="4" data-i="${i}" data-f="note" placeholder="Instructions shown to the user">${esc(m.note||'')}</textarea><div class="acts"><button class="btn r sm" onclick="mDel(${i})">Remove</button></div></div>`).join('')}<div class="sec">Quick add</div><div class="chips">${['bKash','Nagad','Rocket','USDT (TRC20)','Binance Pay'].map(n=>`<button class="chip" onclick="mAdd('${n}')">${n}</button>`).join('')}<button class="chip" onclick="mAdd('')">Custom</button></div><div style="padding:0 12px"><button class="btn" onclick="mSave()">Save changes</button></div>`;
+ if(atab==='rep')h=AD.rep.length?[...AD.rep].reverse().map(r=>`<div class="card" onclick="repUI(${r.id})" style="cursor:pointer"><div class="rw"><b>${esc(r.reason)}</b>${ST(r.status)}</div><div class="mu">Reported: ${U(r.against)}</div><div class="mu">By: ${U(r.by)}  |  ${TM(r.t)}</div></div>`).join(''):'<div class="empty">No user reports.</div>';
+ if(atab==='prob')h=AD.prob.length?[...AD.prob].reverse().map(p=>`<div class="card"><div class="rw"><b>${U(p.user)}</b>${ST(p.status)}</div><div style="margin-top:8px;white-space:pre-wrap">${esc(p.text)}</div><div class="mu">${TM(p.t)}</div>${p.status==='open'?`<div class="acts"><button class="btn sm" onclick="resolveP(${p.id})">Mark resolved</button></div>`:''}</div>`).join(''):'<div class="empty">No problem reports.</div>';
+ $('#adm').innerHTML=`<div class="hdc"><button class="ib" onclick="$('#adm').classList.remove('on')">${ic('back')}</button><div class="t"><b>Admin panel</b><small>Private chats are never visible here</small></div></div><div class="ad">${[['pay',n('Payments',pc)],['num','Numbers'],['rep',n('Reports',rc)],['prob',n('Problems',bc)]].map(t=>`<button class="${atab===t[0]?'on':''}" onclick="atab='${t[0]}';drawAdm()">${t[1]}</button>`).join('')}</div><div style="flex:1;overflow-y:auto;padding-bottom:30px">${h}</div>`;
+}
+async function decide(id,d){await api('admin_pay',{id,decision:d});await loadAdm();drawAdm();render();toast(d==='approved'?'Payment approved':'Payment rejected')}
+async function resolveP(id){await api('admin_problem',{id});await loadAdm();drawAdm()}
+function mRead(){document.querySelectorAll('#adm [data-i]').forEach(e=>AD.methods[e.dataset.i][e.dataset.f]=e.value)}
+function mAdd(n){mRead();const u=/USDT|Binance/.test(n),bd=/bKash|Nagad|Rocket/.test(n);AD.methods.push({id:Date.now(),name:n,number:'',price:u?'0.20 USDT':CFG.PRICE+' BDT',note:bd?'1. Open the '+n+' app and choose Send Money.\n2. Send the exact amount to the number above.\n3. Copy the Transaction ID and paste it below.':u?'1. Send the exact amount to the address above.\n2. Use the correct network only, other networks lose funds.\n3. Paste the transaction hash (TxID) below.':''});drawAdm()}
+function mDel(i){mRead();AD.methods.splice(i,1);drawAdm()}
+async function mSave(){mRead();AD.methods=AD.methods.filter(m=>m.name.trim()&&m.number.trim());await api('admin_methods',{methods:AD.methods});S.methods=AD.methods;drawAdm();toast('Payment numbers saved')}
+function repUI(id){const r=AD.rep.find(x=>x.id===id);
+ sheet(`<div class="gr"></div><div class="h2">${esc(r.reason)}</div><div class="sub">Reported: ${esc(r.against.name)} (@${esc(r.against.username)})<br>By: ${esc(r.by.name)} (@${esc(r.by.username)})</div>
+ <div class="mu">Evidence submitted by the reporter (last ${r.evidence.length} messages)</div><div class="ev">${r.evidence.length?r.evidence.map(e=>`<p class="${e.who==='reported'?'rp':''}"><b>${e.who==='reported'?esc(r.against.name)+' (reported)':esc(r.by.name)}</b>${esc(e.text)}</p>`).join(''):'<p>No messages attached.</p>'}</div>
+ <div class="acts"><button class="btn s sm" onclick="rAct(${id},'dismissed')">Dismiss</button><button class="btn sm" style="background:#e8833a" onclick="rAct(${id},'warned')">Warn</button><button class="btn r sm" onclick="rAct(${id},'banned')">Ban</button></div>`)}
+async function rAct(id,a){await api('admin_report',{id,action:a});closeSheet();await loadAdm();drawAdm();toast('Action saved: '+a)}
+
+/* ---- start ---- */
+async function boot(){
+ if(!CFG.API){try{const d=JSON.parse(localStorage.getItem(KEY));if(d)S=Object.assign(S,d)}catch(e){}}
+ try{K=JSON.parse(localStorage.getItem('inboxo_k'));if(!K&&CR){K=await genKeys();localStorage.setItem('inboxo_k',JSON.stringify(K))}}catch(e){K=null}
+ const nm=TGU?((TGU.first_name||'')+' '+(TGU.last_name||'')).trim():'Demo User';
+ S.me=Object.assign(S.me||{},{id:TGU?String(TGU.id):'demo',name:nm,username:TGU&&TGU.username||'demo_user'});
+ if(S.day!==today()){S.day=today();S.used=0}
+ $('#cb').innerHTML=ic('back');$('#cm').innerHTML=ic('more');$('#sn').innerHTML=ic('send',22);$('#sd').innerHTML=ic('down');$('#rpx').innerHTML=ic('close',20);
+ $('#msgs').onscroll=function(){$('#sd').style.display=this.scrollHeight-this.scrollTop-this.clientHeight>260?'flex':'none'};
+ $('#inp').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+ render();
+ await api('init',{pub:K&&K.pub,name:nm});await sync();
+ if(CFG.API)setInterval(sync,3000);
+}
+boot();
+</script></body></html>
