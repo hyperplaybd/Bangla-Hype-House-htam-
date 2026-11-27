@@ -144,7 +144,7 @@ async function hydrate(){for(const id in S.chats){const c=S.chats[id];for(const 
 
 /* ---- API (demo server lives inside local()) ---- */
 async function api(a,d){
- if(CFG.API){try{const r=await fetch(CFG.API,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:a,initData:TG?TG.initData:'',...(d||{})})});return await r.json()}catch(e){return{error:'net'}}}
+ if(CFG.API){try{const r=await fetch(CFG.API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:a,initData:TG?TG.initData:'',...(d||{})})});return await r.json()}catch(e){return{error:'net'}}}
  return local(a,d||{});
 }
 async function local(a,d){
